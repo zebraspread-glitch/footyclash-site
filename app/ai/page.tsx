@@ -1138,32 +1138,31 @@ export default function AIPage() {
   }
 
   if (!club || !displayClub) {
+    return (
+      <main className="relative min-h-screen bg-transparent text-white">
+        <div className="pointer-events-none absolute inset-0 bg-black/45" />
+
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center justify-center px-3 py-5 sm:px-6 sm:py-10">
+          <div className="text-lg font-extrabold tracking-[0.12em] text-white/75">LOADING...</div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="relative min-h-screen bg-transparent text-white">
       <div className="pointer-events-none absolute inset-0 bg-black/45" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center justify-center px-3 py-5 sm:px-6 sm:py-10">
-        <div className="text-lg font-extrabold tracking-[0.12em] text-white/75">LOADING...</div>
-      </div>
-    </main>
-  );
-}
-
-  return (
-  <main className="relative min-h-screen bg-transparent text-white">
-    <div className="pointer-events-none absolute inset-0 bg-black/45" />
-
-    <div className="relative z-10 mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
             AI MODE
           </h1>
           <div className="mt-2 text-sm font-semibold text-white/70 sm:text-base">
-            Draft against the AI. Team B gets smarter as the level goes up.
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 md:justify-center sm:mt-6">
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 md:grid-cols-2 md:justify-center">
           <div className="flex justify-center">
             <ModeDropdown mode={mode} setMode={setMode} disabled={spinning || aiThinking} />
           </div>
@@ -1176,68 +1175,37 @@ export default function AIPage() {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center sm:mt-8">
-          <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-white/12 bg-black/90">
-            <div className="grid grid-cols-1 md:grid-cols-3">
-              <div className="px-4 py-5 sm:px-7 sm:py-7">
-                {renderEditableHeaderName()}
-                <div className="mt-3 flex flex-wrap items-end gap-2 sm:mt-4">
-                  <span className="break-all text-4xl font-extrabold leading-none text-cyan-300 sm:text-6xl">
-                    {formatStatValue(scoreA, mode)}
-                  </span>
-                  <span className="pb-1.5 text-xs font-bold tracking-[0.14em] text-white/40 sm:pb-2 sm:text-sm sm:tracking-[0.16em]">
-                    {modeMeta.short}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center border-t border-white/10 px-4 py-5 md:border-x md:border-t-0 sm:px-7 sm:py-7">
-                <div className="text-center">
-                  <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45 sm:text-[11px] sm:tracking-[0.28em]">
-                    TURN
-                  </div>
-                  <div className="mt-3 break-words text-xl font-extrabold text-white sm:text-3xl">
-                    {gameOver ? winnerText : turn === "A" ? teamNameA.toUpperCase() : "AI"}
-                  </div>
-                  {!gameOver && (
-                    <div className="mt-2 text-xs font-semibold text-white/55 sm:text-sm">
-                      {aiThinking ? "AI is choosing..." : `Pick ${pickCount + 1} of ${slots.length * 2}`}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 px-4 py-5 md:border-t-0 sm:px-7 sm:py-7">
-                <div className="flex items-center justify-start gap-2 md:justify-end">
-                  <div className="truncate text-[10px] font-extrabold tracking-[0.22em] text-white/45 sm:text-[11px] sm:tracking-[0.28em]">
-                    AI
-                  </div>
-                </div>
-                <div className="mt-3 flex flex-wrap items-end justify-start gap-2 md:justify-end sm:mt-4">
-                  <span className="break-all text-4xl font-extrabold leading-none text-pink-300 sm:text-6xl">
-                    {formatStatValue(scoreB, mode)}
-                  </span>
-                  <span className="pb-1.5 text-xs font-bold tracking-[0.14em] text-white/40 sm:pb-2 sm:text-sm sm:tracking-[0.16em]">
-                    {modeMeta.short}
-                  </span>
-                </div>
-                <div className="mt-3 text-left text-[10px] font-bold tracking-[0.16em] text-white/45 md:text-right sm:text-xs sm:tracking-[0.18em]">
-                  LEVEL {aiLevel}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {gameOver && (
           <div className="mt-6 flex justify-center">
             <div className="w-full max-w-md">
+              <div className="mb-4 text-center">
+                <div className="text-xl font-extrabold text-white sm:text-3xl">{winnerText}</div>
+                <div className="mt-2 text-sm font-semibold text-white/55">
+                  {teamNameA}: {formatStatValue(scoreA, mode)} {modeMeta.short} · AI:{" "}
+                  {formatStatValue(scoreB, mode)} {modeMeta.short}
+                </div>
+              </div>
+
               <button
                 onClick={() => resetGame()}
                 className={`${BUTTON_ANIM} min-h-[52px] w-full rounded-2xl bg-green-500 px-5 py-4 text-base font-extrabold text-white hover:bg-green-400`}
               >
                 NEW GAME
               </button>
+            </div>
+          </div>
+        )}
+
+        {!gameOver && (
+          <div className="mt-6 text-center">
+            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45 sm:text-[11px] sm:tracking-[0.28em]">
+              TURN
+            </div>
+            <div className="mt-2 text-xl font-extrabold text-white sm:text-3xl">
+              {turn === "A" ? teamNameA.toUpperCase() : "AI"}
+            </div>
+            <div className="mt-2 text-xs font-semibold text-white/55 sm:text-sm">
+              {aiThinking ? "AI is choosing..." : `Pick ${pickCount + 1} of ${slots.length * 2}`}
             </div>
           </div>
         )}

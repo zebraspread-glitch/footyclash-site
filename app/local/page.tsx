@@ -337,7 +337,7 @@ function ModeDropdown({
       >
         <div className="min-w-0">
           <div className="text-[11px] font-extrabold tracking-[0.22em] text-white/45">MODE</div>
-          <div className="mt-1 truncate text-base sm:text-lg font-extrabold">{current.label}</div>
+          <div className="mt-1 truncate text-base font-extrabold sm:text-lg">{current.label}</div>
         </div>
         <div className="ml-4 shrink-0 text-xl">▾</div>
       </button>
@@ -789,7 +789,7 @@ export default function LocalPage() {
     return (
       <div className="flex min-w-0 items-center gap-2">
         <div
-          className={`truncate text-[10px] sm:text-[11px] font-extrabold tracking-[0.22em] sm:tracking-[0.28em] text-white/45 ${
+          className={`truncate text-[10px] font-extrabold tracking-[0.22em] text-white/45 sm:text-[11px] sm:tracking-[0.28em] ${
             accentTextClass ?? ""
           }`}
         >
@@ -822,28 +822,28 @@ export default function LocalPage() {
       <div className="rounded-2xl border border-white/12 bg-black/90 p-3 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className={`text-lg sm:text-2xl font-extrabold tracking-[0.08em] ${accentClasses}`}>
+            <div className={`text-lg font-extrabold tracking-[0.08em] sm:text-2xl ${accentClasses}`}>
               {title}
             </div>
-            <div className="mt-1 text-xs sm:text-sm font-semibold text-white/60">
+            <div className="mt-1 text-xs font-semibold text-white/60 sm:text-sm">
               {turn === side && !gameOver ? "Your turn" : gameOver ? "Finished" : "Waiting"}
             </div>
           </div>
 
           <div className="shrink-0 text-right">
-            <div className="text-[10px] font-extrabold tracking-[0.2em] sm:tracking-[0.22em] text-white/45 sm:text-[11px]">
+            <div className="text-[10px] font-extrabold tracking-[0.2em] text-white/45 sm:text-[11px] sm:tracking-[0.22em]">
               SCORE
             </div>
-            <div className="mt-1 text-2xl sm:text-4xl font-extrabold text-white">
+            <div className="mt-1 text-2xl font-extrabold text-white sm:text-4xl">
               {formatStatValue(score, mode)}
             </div>
-            <div className="text-[10px] sm:text-xs font-bold tracking-[0.16em] sm:tracking-[0.18em] text-white/45">
+            <div className="text-[10px] font-bold tracking-[0.16em] text-white/45 sm:text-xs sm:tracking-[0.18em]">
               {mode === "age" ? "YEARS" : modeMeta.short}
             </div>
           </div>
         </div>
 
-        <div className="mt-4 sm:mt-5 space-y-2.5 sm:space-y-3">
+        <div className="mt-4 space-y-2.5 sm:mt-5 sm:space-y-3">
           {slots.map((slot) => {
             const playerId = team[slot.id];
             const p = playerId ? playerMap.get(playerId) ?? null : null;
@@ -854,7 +854,7 @@ export default function LocalPage() {
             return (
               <div key={`${side}-${slot.id}`} className="flex items-stretch gap-2 sm:gap-3">
                 <div
-                  className="flex w-[58px] sm:w-20 shrink-0 items-center justify-center rounded-lg px-1 py-3 text-center text-[11px] sm:text-sm font-extrabold"
+                  className="flex w-[58px] shrink-0 items-center justify-center rounded-lg px-1 py-3 text-center text-[11px] font-extrabold sm:w-20 sm:text-sm"
                   style={{
                     backgroundColor: slotAccentBg,
                     color: slotAccentText,
@@ -864,7 +864,7 @@ export default function LocalPage() {
                 </div>
 
                 <button
-                  className={`${BUTTON_ANIM} flex min-h-[62px] sm:min-h-[58px] flex-1 items-center justify-between gap-2 overflow-hidden rounded-xl border px-3 text-left sm:px-4 ${
+                  className={`${BUTTON_ANIM} flex min-h-[62px] flex-1 items-center justify-between gap-2 overflow-hidden rounded-xl border px-3 text-left sm:min-h-[58px] sm:px-4 ${
                     clickable
                       ? "border-white/40 bg-zinc-900 hover:border-white/60"
                       : "cursor-not-allowed border-white/15 bg-zinc-950"
@@ -905,7 +905,7 @@ export default function LocalPage() {
 
                   {p ? (
                     <span
-                      className="ml-2 shrink-0 whitespace-nowrap rounded-lg border px-2 py-1 text-[10px] sm:px-2.5 sm:text-sm font-extrabold"
+                      className="ml-2 shrink-0 whitespace-nowrap rounded-lg border px-2 py-1 text-[10px] font-extrabold sm:px-2.5 sm:text-sm"
                       style={{
                         backgroundColor: "rgba(0,0,0,0.22)",
                         borderColor: "rgba(255,255,255,0.15)",
@@ -926,73 +926,32 @@ export default function LocalPage() {
 
   return (
     <main className="relative min-h-screen bg-transparent text-white">
-  <div className="pointer-events-none absolute inset-0 bg-black/45" />
+      <div className="pointer-events-none absolute inset-0 bg-black/45" />
 
-  <div className="relative z-10 mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-[0.08em] text-white">
+          <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
             LOCAL MODE
           </h1>
-          <div className="mt-2 text-sm sm:text-base font-semibold text-white/70">
-            Two players. Two lineups. ABBA turn order with one club every two picks.
+          <div className="mt-2 text-sm font-semibold text-white/70 sm:text-base">
           </div>
         </div>
 
-        <div className="mt-5 sm:mt-6 flex justify-center">
+        <div className="mt-5 flex justify-center sm:mt-6">
           <ModeDropdown mode={mode} setMode={setMode} disabled={spinning} />
-        </div>
-
-        <div className="mt-6 sm:mt-8 flex justify-center">
-          <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-white/12 bg-black/90">
-            <div className="grid grid-cols-1 md:grid-cols-3">
-              <div className="px-4 py-5 sm:px-7 sm:py-7">
-                {renderEditableHeaderName("A", teamNameA)}
-                <div className="mt-3 sm:mt-4 flex flex-wrap items-end gap-2">
-                  <span className="text-4xl sm:text-6xl font-extrabold leading-none text-cyan-300 break-all">
-                    {formatStatValue(scoreA, mode)}
-                  </span>
-                  <span className="pb-1.5 sm:pb-2 text-xs sm:text-sm font-bold tracking-[0.14em] sm:tracking-[0.16em] text-white/40">
-                    {modeMeta.short}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center border-t border-white/10 px-4 py-5 md:border-x md:border-t-0 sm:px-7 sm:py-7">
-                <div className="text-center">
-                  <div className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.24em] sm:tracking-[0.28em] text-white/45">
-                    TURN
-                  </div>
-                  <div className="mt-3 text-xl sm:text-3xl font-extrabold text-white break-words">
-                    {gameOver ? winnerText : turn === "A" ? teamNameA.toUpperCase() : teamNameB.toUpperCase()}
-                  </div>
-                  {!gameOver && (
-                    <div className="mt-2 text-xs sm:text-sm font-semibold text-white/55">
-                      Pick {pickCount + 1} of {slots.length * 2}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 px-4 py-5 md:border-t-0 sm:px-7 sm:py-7">
-                <div className="flex items-center justify-start gap-2 md:justify-end">
-                  {renderEditableHeaderName("B", teamNameB)}
-                </div>
-                <div className="mt-3 sm:mt-4 flex flex-wrap items-end justify-start gap-2 md:justify-end">
-                  <span className="text-4xl sm:text-6xl font-extrabold leading-none text-pink-300 break-all">
-                    {formatStatValue(scoreB, mode)}
-                  </span>
-                  <span className="pb-1.5 sm:pb-2 text-xs sm:text-sm font-bold tracking-[0.14em] sm:tracking-[0.16em] text-white/40">
-                    {modeMeta.short}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {gameOver && (
           <div className="mt-6 flex justify-center">
             <div className="w-full max-w-md">
+              <div className="mb-4 text-center">
+                <div className="text-xl font-extrabold text-white sm:text-3xl">{winnerText}</div>
+                <div className="mt-2 text-sm font-semibold text-white/55">
+                  {teamNameA}: {formatStatValue(scoreA, mode)} {modeMeta.short} · {teamNameB}:{" "}
+                  {formatStatValue(scoreB, mode)} {modeMeta.short}
+                </div>
+              </div>
+
               <button
                 onClick={() => resetGame()}
                 className={`${BUTTON_ANIM} min-h-[52px] w-full rounded-2xl bg-green-500 px-5 py-4 text-base font-extrabold text-white hover:bg-green-400`}
@@ -1003,22 +962,22 @@ export default function LocalPage() {
           </div>
         )}
 
-        <div className="mt-6 sm:mt-8 grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:gap-6 xl:grid-cols-2">
           {renderTeamColumn(teamNameA.toUpperCase(), "A", teamA, scoreA, "text-cyan-300")}
           {renderTeamColumn(teamNameB.toUpperCase(), "B", teamB, scoreB, "text-pink-300")}
         </div>
 
         {!gameOver && (
           <div className="mt-8 text-center sm:mt-12">
-            <div className="text-[11px] sm:text-sm font-semibold tracking-[0.24em] sm:tracking-[0.28em] text-white/55">
+            <div className="text-[11px] font-semibold tracking-[0.24em] text-white/55 sm:text-sm sm:tracking-[0.28em]">
               DRAFTING FROM
             </div>
 
-            <div className="mt-4 sm:mt-5 flex items-center justify-center">
+            <div className="mt-4 flex items-center justify-center sm:mt-5">
               <div
-                className={`inline-flex w-full max-w-[360px] items-center justify-center gap-3 sm:gap-4 rounded-xl border border-white/10 px-4 py-4 sm:px-6 text-sm sm:text-xl font-extrabold ${
+                className={`inline-flex w-full max-w-[360px] items-center justify-center gap-3 rounded-xl border border-white/10 px-4 py-4 text-sm font-extrabold transition-transform duration-75 sm:gap-4 sm:px-6 sm:text-xl ${
                   spinning ? "scale-[1.015]" : "scale-100"
-                } transition-transform duration-75`}
+                }`}
                 style={{ backgroundColor: displayClub.primary, color: displayClub.text }}
               >
                 <div className="relative h-9 w-9 shrink-0 sm:h-12 sm:w-12">
@@ -1049,7 +1008,7 @@ export default function LocalPage() {
                   <div className="text-[11px] font-extrabold tracking-[0.24em] text-white/45">
                     PLAYER SELECT
                   </div>
-                  <div className="mt-1 text-sm sm:text-lg font-extrabold tracking-wide text-white">
+                  <div className="mt-1 text-sm font-extrabold tracking-wide text-white sm:text-lg">
                     {active.side === "A" ? teamNameA : teamNameB} • Select {active.slotLabel}
                   </div>
                 </div>
@@ -1109,9 +1068,9 @@ export default function LocalPage() {
                           ) : null}
 
                           <div className="min-w-0 overflow-hidden">
-                            <div className="truncate text-base sm:text-lg font-extrabold">{p.name}</div>
+                            <div className="truncate text-base font-extrabold sm:text-lg">{p.name}</div>
                             <div
-                              className="truncate text-[11px] sm:text-xs font-semibold"
+                              className="truncate text-[11px] font-semibold sm:text-xs"
                               style={{ color: clubMeta ? "rgba(255,255,255,0.82)" : undefined }}
                             >
                               {p.club} • {p.pos.join("/")}
