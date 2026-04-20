@@ -13,10 +13,9 @@ const DEFAULT_TURN_TIME_MS = 30000;
 
 const io = new Server(server, {
   cors: {
-    origin: "*", // ✅ allow Vercel frontend
+    origin: "*", // ✅ allow ALL (fixes Vercel connection)
     methods: ["GET", "POST"],
   },
-  transports: ["polling", "websocket"],
 });
 
 const rooms = Object.create(null);
