@@ -78,18 +78,12 @@ const colorStyles: Record<
 
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen overflow-hidden text-white">
-      {/* BACKGROUND IMAGE */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/background.png')" }}
-      />
+    <main className="relative min-h-screen bg-transparent overflow-hidden text-white">
+  {/* GLOBAL OVERLAY (keeps text readable on image mode) */}
+  <div className="pointer-events-none absolute inset-0 bg-black/60" />
 
-      {/* DARK OVERLAY */}
-      <div className="absolute inset-0 bg-black/70" />
-
-      {/* CONTENT */}
-      <div className="relative z-10">
+  {/* CONTENT */}
+  <div className="relative z-10">
         <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
           <div className="mb-10 text-center">
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">

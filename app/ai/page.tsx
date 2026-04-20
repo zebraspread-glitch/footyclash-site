@@ -1138,38 +1138,22 @@ export default function AIPage() {
   }
 
   if (!club || !displayClub) {
-    return (
-      <main
-        className="min-h-screen text-white"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(18,10,4,0.84), rgba(12,10,18,0.9)), url('/localbackground.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundColor: "#2b1600",
-        }}
-      >
-        <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-3 py-5 sm:px-6 sm:py-10">
-          <div className="text-lg font-extrabold tracking-[0.12em] text-white/75">LOADING...</div>
-        </div>
-      </main>
-    );
-  }
+  return (
+    <main className="relative min-h-screen bg-transparent text-white">
+      <div className="pointer-events-none absolute inset-0 bg-black/45" />
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center justify-center px-3 py-5 sm:px-6 sm:py-10">
+        <div className="text-lg font-extrabold tracking-[0.12em] text-white/75">LOADING...</div>
+      </div>
+    </main>
+  );
+}
 
   return (
-    <main
-      className="min-h-screen text-white"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(18,10,4,0.84), rgba(12,10,18,0.9)), url('/localbackground.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundColor: "#2b1600",
-      }}
-    >
-      <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
+  <main className="relative min-h-screen bg-transparent text-white">
+    <div className="pointer-events-none absolute inset-0 bg-black/45" />
+
+    <div className="relative z-10 mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
             AI MODE

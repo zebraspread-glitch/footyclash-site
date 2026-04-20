@@ -714,12 +714,10 @@ export default function SoloPage() {
   const modeMeta = getModeMeta(mode);
 
   return (
-    <main className="relative min-h-screen overflow-hidden text-white">
-      <div className="absolute inset-0" style={{ backgroundColor: "#00192b" }} />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_32%),radial-gradient(circle_at_bottom,rgba(255,255,255,0.04),transparent_28%)]" />
-      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_rgba(255,255,255,0.18)_1px,_transparent_1px)] bg-[size:24px_24px]" />
+    <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
+  <div className="pointer-events-none absolute inset-0 bg-black/35" />
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
+  <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
             SOLO MODE

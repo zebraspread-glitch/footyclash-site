@@ -925,18 +925,10 @@ export default function LocalPage() {
   }
 
   return (
-    <main
-      className="min-h-screen text-white"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(10,0,20,0.82), rgba(10,0,20,0.88)), url('/localbackground.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundColor: "#600083",
-      }}
-    >
-      <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
+    <main className="relative min-h-screen bg-transparent text-white">
+  <div className="pointer-events-none absolute inset-0 bg-black/45" />
+
+  <div className="relative z-10 mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-[0.08em] text-white">
             LOCAL MODE
