@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://footyclash.com
+
+# Sitemaps
+Sitemap: https://footyclash.com/sitemap.xml
