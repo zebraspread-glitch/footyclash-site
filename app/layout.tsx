@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  verification: {
+    google: "tx4jmy8TfKYW-Bf5bzU2i5YlMEFI8DYbfD1sWEVl2NU",
+  },
   other: {
     "google-adsense-account": "ca-pub-XXXXXXXXXXXXXXXX",
   },
