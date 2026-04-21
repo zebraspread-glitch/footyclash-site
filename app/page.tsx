@@ -1,6 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, Bot, Globe } from "lucide-react";
+import {
+  User,
+  Users,
+  Bot,
+  Globe,
+  Trophy,
+  BarChart3,
+} from "lucide-react";
 
 const modes = [
   {
@@ -37,13 +44,32 @@ const modes = [
   },
 ];
 
+const middleModes = [
+  {
+    href: "/ranked",
+    title: "RANKED MODE",
+    description: "Climb the ladder and test yourself in competitive matches.",
+    button: "PLAY RANKED →",
+    color: "cyan",
+    icon: Trophy,
+  },
+  {
+    href: "/leaderboard",
+    title: "LEADERBOARD",
+    description: "See the top players and compare your performance.",
+    button: "VIEW LEADERBOARD →",
+    color: "pink",
+    icon: BarChart3,
+  },
+];
+
 const extraModes = [
   {
     href: "https://footywho.com",
     title: "FOOTYWHO",
     description: "Guess the AFL player in this Wordle-style game.",
     button: "PLAY FOOTYWHO →",
-    color: "yellow",
+    color: "white",
     image: "/footywho.png",
   },
   {
@@ -108,16 +134,36 @@ const colorStyles: Record<
     text: "text-black",
     glow: "group-hover:shadow-[0_20px_60px_rgba(234,179,8,0.35)]",
   },
+  cyan: {
+    bg: "bg-yellow-400",
+    border: "hover:border-cyan-200",
+    icon: "text-white",
+    text: "text-white",
+    glow: "group-hover:shadow-[0_20px_60px_rgba(6,182,212,0.35)]",
+  },
+  pink: {
+    bg: "bg-yellow-600",
+    border: "hover:border-pink-300",
+    icon: "text-white",
+    text: "text-white",
+    glow: "group-hover:shadow-[0_20px_60px_rgba(219,39,119,0.35)]",
+  },
+  white: {
+  bg: "bg-white",
+  border: "hover:border-gray-300",
+  icon: "text-black",
+  text: "text-black",
+  glow: "group-hover:shadow-[0_20px_60px_rgba(255,255,255,0.25)]",
+},
 };
 
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen bg-transparent overflow-hidden text-white">
+    <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
       <div className="pointer-events-none absolute inset-0 bg-black/60" />
 
       <div className="relative z-10">
         <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
-          
           {/* TITLE */}
           <div className="mb-10 text-center">
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
@@ -142,7 +188,7 @@ export default function HomePage() {
                 >
                   <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover:opacity-100" />
 
-                  <div className="flex flex-col h-full">
+                  <div className="flex h-full flex-col">
                     <div>
                       <Icon className={`${styles.icon} mb-8`} size={40} />
                       <h2 className="text-3xl font-black italic">
@@ -154,9 +200,41 @@ export default function HomePage() {
                       <div className={`font-black ${styles.text}`}>
                         {mode.button}
                       </div>
-                      <p className="mt-4 text-white/80">
-                        {mode.description}
-                      </p>
+                      <p className="mt-4 text-white/80">{mode.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </section>
+
+          {/* RANKED + LEADERBOARD */}
+          <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+            {middleModes.map((mode) => {
+              const styles = colorStyles[mode.color];
+              const Icon = mode.icon;
+
+              return (
+                <Link
+                  key={mode.title}
+                  href={mode.href}
+                  className={`group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02] hover:border-white/20 ${styles.border} ${styles.glow}`}
+                >
+                  <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover:opacity-100" />
+
+                  <div className="flex h-full flex-col">
+                    <div>
+                      <Icon className={`${styles.icon} mb-6`} size={40} />
+                      <h2 className="text-3xl font-black italic">
+                        {mode.title}
+                      </h2>
+                    </div>
+
+                    <div className="mt-auto">
+                      <div className={`font-black ${styles.text}`}>
+                        {mode.button}
+                      </div>
+                      <p className="mt-4 text-white/80">{mode.description}</p>
                     </div>
                   </div>
                 </Link>
@@ -165,7 +243,7 @@ export default function HomePage() {
           </section>
 
           {/* EXTRA BOXES */}
-          <section className="mt-48 md:mt-64 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <section className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-2">
             {extraModes.map((mode) => {
               const styles = colorStyles[mode.color];
 
@@ -177,17 +255,19 @@ export default function HomePage() {
                   rel="noopener noreferrer"
                   className={`group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] ${styles.glow}`}
                 >
-                  <div className="flex flex-col h-full">
+                  <div className="flex h-full flex-col">
                     <div>
                       <Image
-  src={mode.image}
-  alt={mode.title}
-  width={64}
-  height={64}
-  className={`mb-6 object-contain drop-shadow-lg ${
-    mode.title === "FOOTYARCADE" ? "scale-125" : "scale-100"
-  }`}
-/>
+                        src={mode.image}
+                        alt={mode.title}
+                        width={64}
+                        height={64}
+                        className={`mb-6 object-contain drop-shadow-lg ${
+                          mode.title === "FOOTYARCADE"
+                            ? "scale-125"
+                            : "scale-100"
+                        }`}
+                      />
                       <h2 className="text-2xl font-black italic">
                         {mode.title}
                       </h2>
@@ -197,7 +277,11 @@ export default function HomePage() {
                       <div className={`font-black ${styles.text}`}>
                         {mode.button}
                       </div>
-                      <p className="mt-3 text-white/80">
+                      <p
+                        className={`mt-3 ${
+                          mode.color === "yellow" ? "text-black/80" : "text-white/80"
+                        }`}
+                      >
                         {mode.description}
                       </p>
                     </div>
@@ -206,7 +290,6 @@ export default function HomePage() {
               );
             })}
           </section>
-
         </div>
       </div>
     </main>
