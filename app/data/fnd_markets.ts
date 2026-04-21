@@ -188,6 +188,7 @@ export const categories: Record<CategoryKey, FndCategory> = {
       { id: "other_patout", label: "Any player to kick more goals than James Patterson", odds: 4.50 },
       { id: "other_pat_meg_amey", label: "McAuley, Patterson, Amey and Meggetto to all get in the best 6", odds: 3.90 },
       { id: "other_nilma_5", label: "Nilma to kick 5+ goals in every quarter", odds: 3.0 },
+      { id: "other_demaplay", label: "James Demicoli 1+ disposals", odds: 1.01 },
       { id: "other_bunyip_quarter", label: "Bunyip to win any quarter", odds: 15.0 },
             { id: "other_bunyip_zero", label: "Bunyip to go scoreless", odds: 8.0 },
       { id: "other_cbun_outscore", label: "Bunyip to go goalless", odds: 2.30 },
