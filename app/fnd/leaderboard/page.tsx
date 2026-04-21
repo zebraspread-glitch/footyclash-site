@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
@@ -30,7 +30,7 @@ function getLogo(label: string) {
   const lower = label.toLowerCase();
 
   if (lower.includes("bunyip")) return bunyipLogo;
-  return nilmaLogo; // default (all players are Nilma)
+  return nilmaLogo;
 }
 
 export default function FndLeaderboardPage() {
@@ -70,8 +70,6 @@ export default function FndLeaderboardPage() {
     loadEntries();
   }, []);
 
-  const topEntry = useMemo(() => entries[0] ?? null, [entries]);
-
   function toggleEntry(id: string) {
     setOpenEntryId((prev) => (prev === id ? null : id));
   }
@@ -103,20 +101,8 @@ export default function FndLeaderboardPage() {
             </div>
           </div>
 
-          <div className="grid gap-3 border-b border-[#dbe5ee] p-4 sm:grid-cols-2 sm:p-6">
-            <div className="rounded-[18px] border border-[#d6e2ec] bg-[#f7fafc] p-4">
-              <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#6c88a2]">
-                TOP ODDS
-              </div>
-              <div className="mt-2 text-3xl font-black">
-                {loading
-                  ? "..."
-                  : topEntry
-                  ? `${Number(topEntry.total_odds).toFixed(2)} (${topEntry.user_name})`
-                  : "0.00"}
-              </div>
-            </div>
-
+          {/* ✅ ONLY TOTAL ENTRIES NOW */}
+          <div className="border-b border-[#dbe5ee] p-4 sm:p-6">
             <div className="rounded-[18px] border border-[#d6e2ec] bg-[#f7fafc] p-4">
               <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#6c88a2]">
                 TOTAL ENTRIES
