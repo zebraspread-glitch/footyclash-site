@@ -235,7 +235,8 @@ function normalizeSlot(slot: string) {
   if (raw.includes("mid")) return "MID";
   if (raw.includes("def") || raw.includes("back")) return "DEF";
   if (raw.includes("ruck")) return "RUCK";
-  if (raw.includes("flex") || raw.includes("bench") || raw.includes("util")) return "FLEX";
+  if (raw.includes("flex") || raw.includes("bench") || raw.includes("util"))
+    return "FLEX";
 
   return slot.toUpperCase().replace(/[_-]+/g, " ");
 }
@@ -398,7 +399,10 @@ function MobileBannerAd() {
           SPONSORED
         </div>
         <div className="flex justify-center">
-          <div ref={holderRef} className="min-h-[50px] min-w-[320px] max-w-[320px]" />
+          <div
+            ref={holderRef}
+            className="min-h-[50px] min-w-[320px] max-w-[320px]"
+          />
         </div>
       </div>
     </div>
@@ -620,8 +624,8 @@ function RangeTabs({
               active
                 ? "bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
                 : disabled
-                ? "cursor-not-allowed bg-white/[0.04] text-white/35"
-                : "bg-white/[0.04] text-white/75 hover:bg-white/[0.10] hover:text-white"
+                  ? "cursor-not-allowed bg-white/[0.04] text-white/35"
+                  : "bg-white/[0.04] text-white/75 hover:bg-white/[0.10] hover:text-white"
             }`}
           >
             {option.label.toUpperCase()}
@@ -779,6 +783,55 @@ function TeamModal({
   );
 }
 
+function SideBannerAd() {
+  const holderRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder) return;
+
+    holder.innerHTML = "";
+
+    const configScript = document.createElement("script");
+    configScript.type = "text/javascript";
+    configScript.innerHTML = `
+      atOptions = {
+        'key' : 'a6aad23e6f405117e2d6001cafd75afe',
+        'format' : 'iframe',
+        'height' : 600,
+        'width' : 160,
+        'params' : {}
+      };
+    `;
+
+    const invokeScript = document.createElement("script");
+    invokeScript.type = "text/javascript";
+    invokeScript.src =
+      "https://www.highperformanceformat.com/a6aad23e6f405117e2d6001cafd75afe/invoke.js";
+    invokeScript.async = true;
+
+    holder.appendChild(configScript);
+    holder.appendChild(invokeScript);
+
+    return () => {
+      holder.innerHTML = "";
+    };
+  }, []);
+
+  return (
+    <div className="hidden xl:block shrink-0">
+      <div className="sticky top-24">
+        <div className="overflow-hidden rounded-[20px] border border-white/10 bg-black/30 p-2 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+          <div className="mb-1 text-center text-[9px] font-extrabold tracking-[0.2em] text-white/40">
+            AD
+          </div>
+          <div ref={holderRef} className="h-[600px] w-[160px]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LeaderboardPage() {
   const [mode, setMode] = useState<StatMode>("sc_points");
   const [range, setRange] = useState<LeaderboardRange>("all_time");
@@ -786,10 +839,14 @@ export default function LeaderboardPage() {
   const [topScore, setTopScore] = useState(0);
   const [topName, setTopName] = useState("—");
   const [totalEntries, setTotalEntries] = useState(0);
-  const [modeCounts, setModeCounts] = useState<Partial<Record<StatMode, number>>>({});
+  const [modeCounts, setModeCounts] = useState<
+    Partial<Record<StatMode, number>>
+  >({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(
+    null
+  );
 
   const modeMeta = useMemo(() => getModeMeta(mode), [mode]);
   const rangeMeta = useMemo(() => getRangeMeta(range), [range]);
@@ -803,13 +860,17 @@ export default function LeaderboardPage() {
 
       const selectedBoostA = a.key === mode ? 1 : 0;
       const selectedBoostB = b.key === mode ? 1 : 0;
-      if (selectedBoostB !== selectedBoostA) return selectedBoostB - selectedBoostA;
+      if (selectedBoostB !== selectedBoostA)
+        return selectedBoostB - selectedBoostA;
 
       return a.label.localeCompare(b.label);
     });
   }, [modeCounts, mode]);
 
-  async function fetchLeaderboard(modeToLoad: StatMode, rangeToLoad: LeaderboardRange) {
+  async function fetchLeaderboard(
+    modeToLoad: StatMode,
+    rangeToLoad: LeaderboardRange
+  ) {
     const res = await fetch(
       `/api/ranked/top?mode=${encodeURIComponent(modeToLoad)}&period=${encodeURIComponent(rangeToLoad)}`,
       { cache: "no-store" }
@@ -824,29 +885,35 @@ export default function LeaderboardPage() {
     return data;
   }
 
-  async function loadLeaderboard(selectedMode: StatMode, selectedRange: LeaderboardRange) {
+  async function loadLeaderboard(
+    selectedMode: StatMode,
+    selectedRange: LeaderboardRange
+  ) {
     try {
       setLoading(true);
       setError("");
 
       const [selectedData, ...otherModeData] = await Promise.all([
         fetchLeaderboard(selectedMode, selectedRange),
-        ...MODE_OPTIONS.filter((option) => option.key !== selectedMode).map((option) =>
-          fetchLeaderboard(option.key, selectedRange)
-            .then((data) => ({
-              mode: option.key,
-              totalEntries: Number(data?.totalEntries ?? 0) || 0,
-            }))
-            .catch(() => ({
-              mode: option.key,
-              totalEntries: 0,
-            }))
+        ...MODE_OPTIONS.filter((option) => option.key !== selectedMode).map(
+          (option) =>
+            fetchLeaderboard(option.key, selectedRange)
+              .then((data) => ({
+                mode: option.key,
+                totalEntries: Number(data?.totalEntries ?? 0) || 0,
+              }))
+              .catch(() => ({
+                mode: option.key,
+                totalEntries: 0,
+              }))
         ),
       ]);
 
       setEntries(Array.isArray(selectedData?.entries) ? selectedData.entries : []);
       setTopScore(Number(selectedData?.topScore ?? 0) || 0);
-      setTopName(typeof selectedData?.topName === "string" ? selectedData.topName : "—");
+      setTopName(
+        typeof selectedData?.topName === "string" ? selectedData.topName : "—"
+      );
       setTotalEntries(Number(selectedData?.totalEntries ?? 0) || 0);
 
       const nextCounts: Partial<Record<StatMode, number>> = {
@@ -864,7 +931,9 @@ export default function LeaderboardPage() {
       setTopName("—");
       setTotalEntries(0);
       setModeCounts({});
-      setError(err instanceof Error ? err.message : "Failed to load leaderboard.");
+      setError(
+        err instanceof Error ? err.message : "Failed to load leaderboard."
+      );
     } finally {
       setLoading(false);
     }
@@ -878,7 +947,10 @@ export default function LeaderboardPage() {
       }
 
       const savedRange = localStorage.getItem("leaderboard_selected_range_2026");
-      if (savedRange && RANGE_OPTIONS.some((option) => option.key === savedRange)) {
+      if (
+        savedRange &&
+        RANGE_OPTIONS.some((option) => option.key === savedRange)
+      ) {
         setRange(savedRange as LeaderboardRange);
       }
     } catch {}
@@ -910,138 +982,156 @@ export default function LeaderboardPage() {
 
       <div className="pointer-events-none absolute inset-0 bg-black/45" />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-10">
-        <div className="text-center">
-          <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
-            {rangeMeta.label.toUpperCase()} LEADERBOARD
-          </h1>
-          <div className="mt-2 text-sm font-semibold text-white/70 sm:text-base">
-            Ranked runs across every stat mode
-          </div>
-        </div>
-
-        <div className="mt-5 sm:mt-6">
-          <RangeTabs range={range} setRange={setRange} disabled={loading} />
-        </div>
-
-        <div className="mt-5 flex justify-center sm:mt-6">
-          <ModeDropdown
-            mode={mode}
-            setMode={setMode}
-            disabled={loading}
-            sortedModes={sortedModes}
-            modeCounts={modeCounts}
-          />
-        </div>
-
-        <div className="mt-6">
-          <DesktopBannerAd />
-          <MobileBannerAd />
-        </div>
-
-        <div className="mt-6 grid gap-3 sm:mt-8 md:grid-cols-3">
-          <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
-            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
-              #1 USER
-            </div>
-            <div className="mt-3 truncate text-2xl font-extrabold text-white sm:text-3xl">
-              {loading ? "Loading..." : topName}
+      <div className="relative z-10 mx-auto flex w-full max-w-[1400px] gap-6 px-3 py-5 sm:px-6 sm:py-10">
+        <div className="min-w-0 flex-1">
+          <div className="text-center">
+            <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
+              {rangeMeta.label.toUpperCase()} LEADERBOARD
+            </h1>
+            <div className="mt-2 text-sm font-semibold text-white/70 sm:text-base">
+              Ranked runs across every stat mode
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
-            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
-              HIGH SCORE
-            </div>
-            <div className="mt-3 flex flex-wrap items-end gap-2">
-              <span className="bg-gradient-to-b from-[#fff7c2] via-[#f2cf63] to-[#c78a18] bg-clip-text text-4xl font-extrabold leading-none text-transparent sm:text-5xl">
-                {loading ? "..." : formatStatValue(topScore, mode)}
-              </span>
-              <span className="pb-1 text-xs font-bold tracking-[0.16em] text-[#d7bb67] sm:text-sm">
-                {modeMeta.short}
-              </span>
-            </div>
+          <div className="mt-5 sm:mt-6">
+            <RangeTabs range={range} setRange={setRange} disabled={loading} />
           </div>
 
-          <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
-            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
-              TOTAL ENTRIES
-            </div>
-            <div className="mt-3 text-4xl font-extrabold leading-none text-white sm:text-5xl">
-              {loading ? "..." : totalEntries}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 sm:mt-8">
-          <NativeBannerAd />
-        </div>
-
-        <div className="mt-6 overflow-hidden rounded-[24px] border border-[#2f3b52] bg-[#101317]/95 shadow-[0_20px_80px_rgba(0,0,0,0.45)] sm:mt-8">
-          <div className="grid grid-cols-[72px_minmax(0,1fr)_90px_110px] border-b border-[#253047] px-4 py-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/70 sm:grid-cols-[100px_minmax(0,1fr)_160px_140px] sm:px-6">
-            <div>Rank</div>
-            <div>User</div>
-            <div>High Score</div>
-            <div className="text-right">Team</div>
+          <div className="mt-5 flex justify-center sm:mt-6">
+            <ModeDropdown
+              mode={mode}
+              setMode={setMode}
+              disabled={loading}
+              sortedModes={sortedModes}
+              modeCounts={modeCounts}
+            />
           </div>
 
-          {error ? (
-            <div className="px-4 py-10 text-center sm:px-6">
-              <div className="text-lg font-extrabold text-red-300">Could not load leaderboard</div>
-              <div className="mt-2 text-sm font-semibold text-white/65">{error}</div>
-            </div>
-          ) : loading ? (
-            <div className="px-4 py-4 sm:px-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-[58px] animate-pulse border-b border-[#253047] bg-white/[0.03]" />
-              ))}
-            </div>
-          ) : entries.length === 0 ? (
-            <div className="px-4 py-12 text-center sm:px-6">
-              <div className="text-xl font-extrabold text-white">No scores yet</div>
-              <div className="mt-2 text-sm font-semibold text-white/60">
-                Be the first to submit a {rangeMeta.label.toLowerCase()} ranked score in {modeMeta.label}.
+          <div className="mt-6">
+            <DesktopBannerAd />
+            <MobileBannerAd />
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:mt-8 md:grid-cols-3">
+            <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
+              <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
+                #1 USER
+              </div>
+              <div className="mt-3 truncate text-2xl font-extrabold text-white sm:text-3xl">
+                {loading ? "Loading..." : topName}
               </div>
             </div>
-          ) : (
-            <div>
-              {entries.map((entry) => (
-                <div
-                  key={`${entry.id ?? entry.name}-${entry.rank}-${entry.score}`}
-                  className="grid grid-cols-[72px_minmax(0,1fr)_90px_110px] items-center gap-2 border-b border-[#253047] px-4 py-4 transition hover:bg-white/[0.03] sm:grid-cols-[100px_minmax(0,1fr)_160px_140px] sm:px-6"
-                >
-                  <div className={`text-xl font-extrabold ${rankColor(entry.rank)}`}>
-                    {entry.rank}
-                  </div>
 
-                  <div className="min-w-0">
-                    <div className="truncate text-base font-extrabold text-white sm:text-xl">
-                      {entry.name}
+            <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
+              <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
+                HIGH SCORE
+              </div>
+              <div className="mt-3 flex flex-wrap items-end gap-2">
+                <span className="bg-gradient-to-b from-[#fff7c2] via-[#f2cf63] to-[#c78a18] bg-clip-text text-4xl font-extrabold leading-none text-transparent sm:text-5xl">
+                  {loading ? "..." : formatStatValue(topScore, mode)}
+                </span>
+                <span className="pb-1 text-xs font-bold tracking-[0.16em] text-[#d7bb67] sm:text-sm">
+                  {modeMeta.short}
+                </span>
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
+              <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
+                TOTAL ENTRIES
+              </div>
+              <div className="mt-3 text-4xl font-extrabold leading-none text-white sm:text-5xl">
+                {loading ? "..." : totalEntries}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 sm:mt-8">
+            <NativeBannerAd />
+          </div>
+
+          <div className="mt-6 overflow-hidden rounded-[24px] border border-[#2f3b52] bg-[#101317]/95 shadow-[0_20px_80px_rgba(0,0,0,0.45)] sm:mt-8">
+            <div className="grid grid-cols-[72px_minmax(0,1fr)_90px_110px] border-b border-[#253047] px-4 py-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/70 sm:grid-cols-[100px_minmax(0,1fr)_160px_140px] sm:px-6">
+              <div>Rank</div>
+              <div>User</div>
+              <div>High Score</div>
+              <div className="text-right">Team</div>
+            </div>
+
+            {error ? (
+              <div className="px-4 py-10 text-center sm:px-6">
+                <div className="text-lg font-extrabold text-red-300">
+                  Could not load leaderboard
+                </div>
+                <div className="mt-2 text-sm font-semibold text-white/65">
+                  {error}
+                </div>
+              </div>
+            ) : loading ? (
+              <div className="px-4 py-4 sm:px-6">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-[58px] animate-pulse border-b border-[#253047] bg-white/[0.03]"
+                  />
+                ))}
+              </div>
+            ) : entries.length === 0 ? (
+              <div className="px-4 py-12 text-center sm:px-6">
+                <div className="text-xl font-extrabold text-white">
+                  No scores yet
+                </div>
+                <div className="mt-2 text-sm font-semibold text-white/60">
+                  Be the first to submit a {rangeMeta.label.toLowerCase()} ranked
+                  score in {modeMeta.label}.
+                </div>
+              </div>
+            ) : (
+              <div>
+                {entries.map((entry) => (
+                  <div
+                    key={`${entry.id ?? entry.name}-${entry.rank}-${entry.score}`}
+                    className="grid grid-cols-[72px_minmax(0,1fr)_90px_110px] items-center gap-2 border-b border-[#253047] px-4 py-4 transition hover:bg-white/[0.03] sm:grid-cols-[100px_minmax(0,1fr)_160px_140px] sm:px-6"
+                  >
+                    <div
+                      className={`text-xl font-extrabold ${rankColor(entry.rank)}`}
+                    >
+                      {entry.rank}
+                    </div>
+
+                    <div className="min-w-0">
+                      <div className="truncate text-base font-extrabold text-white sm:text-xl">
+                        {entry.name}
+                      </div>
+                    </div>
+
+                    <div
+                      className={`text-base font-extrabold sm:text-xl ${scoreColor(entry.rank)}`}
+                    >
+                      {formatStatValue(entry.score, mode)}
+                    </div>
+
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedEntry(entry)}
+                        className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-[11px] font-extrabold tracking-[0.14em] text-cyan-300 transition hover:border-cyan-300/50 hover:bg-cyan-300/15 hover:text-cyan-200 sm:text-xs"
+                      >
+                        VIEW TEAM
+                      </button>
                     </div>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-                  <div className={`text-base font-extrabold sm:text-xl ${scoreColor(entry.rank)}`}>
-                    {formatStatValue(entry.score, mode)}
-                  </div>
-
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedEntry(entry)}
-                      className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-[11px] font-extrabold tracking-[0.14em] text-cyan-300 transition hover:border-cyan-300/50 hover:bg-cyan-300/15 hover:text-cyan-200 sm:text-xs"
-                    >
-                      VIEW TEAM
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="mt-6 sm:mt-8">
+            <SmartlinkCard />
+          </div>
         </div>
 
-        <div className="mt-6 sm:mt-8">
-          <SmartlinkCard />
-        </div>
+        <SideBannerAd />
       </div>
 
       <TeamModal

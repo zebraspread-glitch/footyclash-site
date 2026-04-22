@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Script from "next/script";
 import players2026 from "@/app/data/afl_players26.json";
+import SideBanner160 from "@/app/components/SideBanner160";
 
 /** ================= Types ================= */
 type PlayerPos = "FWD" | "MID" | "DEF" | "RUCK";
@@ -847,8 +848,18 @@ export default function RankedPage() {
         strategy="afterInteractive"
       />
 
-      <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
+            <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
         <div className="pointer-events-none absolute inset-0 bg-black/35" />
+
+        {/* LEFT SIDE AD */}
+        <div className="hidden xl:block fixed left-2 top-1/2 -translate-y-1/2 z-40">
+          <SideBanner160 />
+        </div>
+
+        {/* RIGHT SIDE AD */}
+        <div className="hidden xl:block fixed right-2 top-1/2 -translate-y-1/2 z-40">
+          <SideBanner160 />
+        </div>
 
         <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
           <div className="text-center">

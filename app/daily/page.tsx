@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import players2026 from "@/app/data/afl_players26.json";
+import SideBanner160 from "@/app/components/SideBanner160";
 
 /** ================= Types ================= */
 type PlayerPos = "FWD" | "MID" | "DEF" | "RUCK";
@@ -869,8 +870,18 @@ export default function DailyPage() {
 
   if (!hydrated) {
     return (
-      <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
-        <div className="pointer-events-none absolute inset-0 bg-black/35" />
+  <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
+    <div className="pointer-events-none absolute inset-0 bg-black/35" />
+
+    {/* LEFT SIDE AD */}
+    <div className="hidden xl:block fixed left-2 top-1/2 -translate-y-1/2 z-40">
+      <SideBanner160 />
+    </div>
+
+    {/* RIGHT SIDE AD */}
+    <div className="hidden xl:block fixed right-2 top-1/2 -translate-y-1/2 z-40">
+      <SideBanner160 />
+    </div>
         <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-10">
           <div className="text-lg font-bold text-white/70">Loading daily game...</div>
         </div>
@@ -879,9 +890,18 @@ export default function DailyPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
-      <div className="pointer-events-none absolute inset-0 bg-black/35" />
+  <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
+    <div className="pointer-events-none absolute inset-0 bg-black/35" />
 
+    {/* LEFT SIDE AD */}
+    <div className="hidden xl:block fixed left-2 top-1/2 -translate-y-1/2 z-40">
+      <SideBanner160 />
+    </div>
+
+    {/* RIGHT SIDE AD */}
+    <div className="hidden xl:block fixed right-2 top-1/2 -translate-y-1/2 z-40">
+      <SideBanner160 />
+    </div>
       <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
