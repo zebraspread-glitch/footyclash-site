@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import players from "@/app/data/afl_players26.json";
 
@@ -34,6 +35,19 @@ type LeaderboardEntry = {
 type PlayerRecord = {
   id: string;
   name: string;
+  club: string;
+  age?: number;
+  number?: number;
+  disposals?: number;
+  goals?: number;
+  kicks?: number;
+  handballs?: number;
+  marks?: number;
+  tackles?: number;
+  hitouts?: number;
+  sc_points?: number;
+  bounces?: number;
+  metres_gained?: number;
 };
 
 const MODE_OPTIONS: ModeOption[] = [
@@ -51,8 +65,29 @@ const MODE_OPTIONS: ModeOption[] = [
   { key: "metres_gained", label: "Metres Gained", short: "MG" },
 ];
 
-const playerNameMap: Record<string, string> = Object.fromEntries(
-  (players as PlayerRecord[]).map((player) => [player.id, player.name])
+const CLUB_LOGOS: Record<string, string> = {
+  Adelaide: "/team-icons/adelaide.png",
+  "Brisbane Lions": "/team-icons/brisbane.png",
+  Carlton: "/team-icons/carlton.png",
+  Collingwood: "/team-icons/collingwood.png",
+  Essendon: "/team-icons/essendon.png",
+  Fremantle: "/team-icons/fremantle.png",
+  Geelong: "/team-icons/geelong.png",
+  "Gold Coast": "/team-icons/gold-coast.png",
+  GWS: "/team-icons/gws.png",
+  Hawthorn: "/team-icons/hawthorn.png",
+  Melbourne: "/team-icons/melbourne.png",
+  "North Melbourne": "/team-icons/north-melbourne.png",
+  "Port Adelaide": "/team-icons/port-adelaide.png",
+  Richmond: "/team-icons/richmond.png",
+  "St Kilda": "/team-icons/st-kilda.png",
+  Sydney: "/team-icons/sydney.png",
+  "West Coast": "/team-icons/west-coast.png",
+  "Western Bulldogs": "/team-icons/western-bulldogs.png",
+};
+
+const playerMap: Record<string, PlayerRecord> = Object.fromEntries(
+  (players as PlayerRecord[]).map((player) => [player.id, player])
 );
 
 function getModeMeta(mode: StatMode) {
@@ -123,13 +158,36 @@ function getPlayerRowStyle(index: number) {
   return styles[index % styles.length];
 }
 
-function getPlayerDisplayName(playerValue: string | null) {
-  if (!playerValue) return "";
-
+function getPlayerRecord(playerValue: string | null) {
+  if (!playerValue) return null;
   const trimmed = String(playerValue).trim();
-  if (!trimmed) return "";
+  if (!trimmed) return null;
+  return playerMap[trimmed] ?? null;
+}
 
-  return playerNameMap[trimmed] || trimmed;
+function getPlayerDisplayName(playerValue: string | null) {
+  const record = getPlayerRecord(playerValue);
+  if (record) return record.name;
+  return playerValue ? String(playerValue) : "";
+}
+
+function getPlayerClub(playerValue: string | null) {
+  const record = getPlayerRecord(playerValue);
+  return record?.club ?? "";
+}
+
+function getPlayerLogo(playerValue: string | null) {
+  const club = getPlayerClub(playerValue);
+  return CLUB_LOGOS[club] ?? "";
+}
+
+function getPlayerModeScore(playerValue: string | null, mode: StatMode) {
+  const record = getPlayerRecord(playerValue);
+  if (!record) return null;
+
+  const value = record[mode];
+  if (typeof value !== "number") return 0;
+  return value;
 }
 
 function ModeDropdown({
@@ -316,6 +374,9 @@ function TeamModal({
               const slotLabel = normalizeSlot(slot);
               const rowStyle = getPlayerRowStyle(index);
               const displayName = getPlayerDisplayName(player);
+              const club = getPlayerClub(player);
+              const logo = getPlayerLogo(player);
+              const playerScore = getPlayerModeScore(player, mode);
 
               return (
                 <div
@@ -327,10 +388,41 @@ function TeamModal({
                   </div>
 
                   <div
-                    className={`flex min-h-[58px] items-center rounded-2xl border px-4 shadow-[0_8px_24px_rgba(0,0,0,0.22)] sm:min-h-[62px] sm:px-6 ${rowStyle}`}
+                    className={`flex min-h-[58px] items-center justify-between gap-3 rounded-2xl border px-4 shadow-[0_8px_24px_rgba(0,0,0,0.22)] sm:min-h-[62px] sm:px-6 ${rowStyle}`}
                   >
-                    <div className="min-w-0 text-lg font-extrabold sm:text-[1.65rem]">
-                      <div className="truncate">{displayName}</div>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/10 sm:h-12 sm:w-12">
+                        {logo ? (
+                          <Image
+                            src={logo}
+                            alt={club || displayName}
+                            width={48}
+                            height={48}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <div className="text-[10px] font-black tracking-[0.12em]">
+                            {club ? club.slice(0, 3).toUpperCase() : "AFL"}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="truncate text-lg font-extrabold sm:text-[1.65rem]">
+                          {displayName}
+                        </div>
+                        {club ? (
+                          <div className="truncate text-xs font-bold opacity-80 sm:text-sm">
+                            {club}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 rounded-2xl border border-black/20 bg-black/20 px-3 py-2 text-sm font-black tracking-[0.05em] sm:px-4 sm:text-base">
+                      {playerScore !== null
+                        ? `${formatStatValue(playerScore, mode)} ${getModeMeta(mode).short}`
+                        : `0 ${getModeMeta(mode).short}`}
                     </div>
                   </div>
                 </div>
