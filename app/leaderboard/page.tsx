@@ -66,24 +66,45 @@ const MODE_OPTIONS: ModeOption[] = [
 ];
 
 const CLUB_LOGOS: Record<string, string> = {
-  Adelaide: "/team-icons/adelaide.png",
-  "Brisbane Lions": "/team-icons/brisbane.png",
-  Carlton: "/team-icons/carlton.png",
-  Collingwood: "/team-icons/collingwood.png",
-  Essendon: "/team-icons/essendon.png",
-  Fremantle: "/team-icons/fremantle.png",
-  Geelong: "/team-icons/geelong.png",
-  "Gold Coast": "/team-icons/gold-coast.png",
-  GWS: "/team-icons/gws.png",
-  Hawthorn: "/team-icons/hawthorn.png",
-  Melbourne: "/team-icons/melbourne.png",
-  "North Melbourne": "/team-icons/north-melbourne.png",
-  "Port Adelaide": "/team-icons/port-adelaide.png",
-  Richmond: "/team-icons/richmond.png",
-  "St Kilda": "/team-icons/st-kilda.png",
-  Sydney: "/team-icons/sydney.png",
-  "West Coast": "/team-icons/west-coast.png",
-  "Western Bulldogs": "/team-icons/western-bulldogs.png",
+  Adelaide: "/team-logos/crows.png",
+  "Brisbane Lions": "/team-logos/lions.png",
+  Carlton: "/team-logos/blues.png",
+  Collingwood: "/team-logos/magpies.png",
+  Essendon: "/team-logos/bombers.png",
+  Fremantle: "/team-logos/dockers.png",
+  Geelong: "/team-logos/cats.png",
+  "Gold Coast": "/team-logos/suns.png",
+  GWS: "/team-logos/giants.png",
+  Hawthorn: "/team-logos/hawks.png",
+  Melbourne: "/team-logos/demons.png",
+  "North Melbourne": "/team-logos/kangaroos.png",
+  "Port Adelaide": "/team-logos/power.png",
+  Richmond: "/team-logos/tigers.png",
+  "St Kilda": "/team-logos/saints.png",
+  Sydney: "/team-logos/swans.png",
+  "West Coast": "/team-logos/eagles.png",
+  "Western Bulldogs": "/team-logos/bulldogs.png",
+};
+
+const CLUB_ROW_STYLES: Record<string, string> = {
+  Adelaide: "bg-[#97004a] border-[#d84c87] text-[#ffe100]",
+  "Brisbane Lions": "bg-[#7c1235] border-[#b84d70] text-[#f4c542]",
+  Carlton: "bg-[#0b2f6b] border-[#3e6dbe] text-white",
+  Collingwood: "bg-[#1d3f7a] border-[#4d74bb] text-white",
+  Essendon: "bg-[#141414] border-[#4a4a4a] text-[#ff4d4d]",
+  Fremantle: "bg-[#2b0f4f] border-[#7a52b3] text-white",
+  Geelong: "bg-[#123c7b] border-[#4974b9] text-white",
+  "Gold Coast": "bg-[#f75c1e] border-[#ff8d60] text-black",
+  GWS: "bg-[#172e66] border-[#4e6dad] text-white",
+  Hawthorn: "bg-[#4b2c17] border-[#8b5a34] text-[#f4c542]",
+  Melbourne: "bg-[#d70000] border-[#ff5454] text-[#ffe100]",
+  "North Melbourne": "bg-[#2158b8] border-[#5b8ae0] text-white",
+  "Port Adelaide": "bg-[#14437d] border-[#4a77b0] text-white",
+  Richmond: "bg-[#111111] border-[#444444] text-[#ffe100]",
+  "St Kilda": "bg-[#2158b8] border-[#5b8ae0] text-white",
+  Sydney: "bg-[#c4002f] border-[#ef5677] text-white",
+  "West Coast": "bg-[#1ea4d8] border-[#62caef] text-black",
+  "Western Bulldogs": "bg-[#114fb6] border-[#4c82dd] text-white",
 };
 
 const playerMap: Record<string, PlayerRecord> = Object.fromEntries(
@@ -143,21 +164,6 @@ function slotSortValue(slot: string) {
   return 99;
 }
 
-function getPlayerRowStyle(index: number) {
-  const styles = [
-    "bg-[#0f2f67] border-[#3560ad] text-white",
-    "bg-[#179fd5] border-[#5bc5ef] text-black",
-    "bg-[#f75c1e] border-[#ff8d60] text-black",
-    "bg-[#0c3d78] border-[#2d69b5] text-white",
-    "bg-[#97004a] border-[#d84c87] text-[#ffe100]",
-    "bg-[#1352b8] border-[#4f85dd] text-white",
-    "bg-[#cf0000] border-[#ff5454] text-[#ffe100]",
-    "bg-[#133874] border-[#3c64ad] text-white",
-  ];
-
-  return styles[index % styles.length];
-}
-
 function getPlayerRecord(playerValue: string | null) {
   if (!playerValue) return null;
   const trimmed = String(playerValue).trim();
@@ -188,6 +194,10 @@ function getPlayerModeScore(playerValue: string | null, mode: StatMode) {
   const value = record[mode];
   if (typeof value !== "number") return 0;
   return value;
+}
+
+function getPlayerRowStyleByClub(club: string) {
+  return CLUB_ROW_STYLES[club] ?? "bg-[#173b76] border-[#4c73b3] text-white";
 }
 
 function ModeDropdown({
@@ -370,13 +380,13 @@ function TeamModal({
           </div>
         ) : (
           <div className="space-y-3">
-            {teamEntries.map(([slot, player], index) => {
+            {teamEntries.map(([slot, player]) => {
               const slotLabel = normalizeSlot(slot);
-              const rowStyle = getPlayerRowStyle(index);
               const displayName = getPlayerDisplayName(player);
               const club = getPlayerClub(player);
               const logo = getPlayerLogo(player);
               const playerScore = getPlayerModeScore(player, mode);
+              const rowStyle = getPlayerRowStyleByClub(club);
 
               return (
                 <div
