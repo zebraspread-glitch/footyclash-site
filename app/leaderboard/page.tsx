@@ -18,8 +18,16 @@ type StatMode =
   | "bounces"
   | "metres_gained";
 
+type LeaderboardRange = "daily" | "weekly" | "monthly" | "all_time";
+
 type ModeOption = {
   key: StatMode;
+  label: string;
+  short: string;
+};
+
+type RangeOption = {
+  key: LeaderboardRange;
   label: string;
   short: string;
 };
@@ -68,6 +76,13 @@ const MODE_OPTIONS: ModeOption[] = [
   { key: "sc_points", label: "SC Points", short: "SC" },
   { key: "bounces", label: "Bounces", short: "BOUN" },
   { key: "metres_gained", label: "Metres Gained", short: "MG" },
+];
+
+const RANGE_OPTIONS: RangeOption[] = [
+  { key: "daily", label: "Daily", short: "DAY" },
+  { key: "weekly", label: "Weekly", short: "WEEK" },
+  { key: "monthly", label: "Monthly", short: "MONTH" },
+  { key: "all_time", label: "All Time", short: "ALL" },
 ];
 
 const CLUB_LOGOS: Record<string, string> = {
@@ -121,9 +136,9 @@ const CLUB_THEMES: Record<string, ClubTheme> = {
     pill: "bg-[#002b5c] text-white",
   },
   "Gold Coast": {
-  row: "bg-[#d71920] text-[#ffd200]",
-  pill: "bg-[#d71920] text-[#ffd200]",
-},
+    row: "bg-[#d71920] text-[#ffd200]",
+    pill: "bg-[#d71920] text-[#ffd200]",
+  },
   GWS: {
     row: "bg-[#f15a22] text-white",
     pill: "bg-[#f15a22] text-white",
@@ -172,6 +187,10 @@ const playerMap: Record<string, PlayerRecord> = Object.fromEntries(
 
 function getModeMeta(mode: StatMode) {
   return MODE_OPTIONS.find((option) => option.key === mode) ?? MODE_OPTIONS[0];
+}
+
+function getRangeMeta(range: LeaderboardRange) {
+  return RANGE_OPTIONS.find((option) => option.key === range) ?? RANGE_OPTIONS[0];
 }
 
 function formatStatValue(value: number, mode: StatMode) {
@@ -380,6 +399,42 @@ function ModeDropdown({
   );
 }
 
+function RangeTabs({
+  range,
+  setRange,
+  disabled,
+}: {
+  range: LeaderboardRange;
+  setRange: (range: LeaderboardRange) => void;
+  disabled: boolean;
+}) {
+  return (
+    <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-center gap-2 rounded-[24px] border border-white/10 bg-white/[0.04] p-2 backdrop-blur-xl">
+      {RANGE_OPTIONS.map((option) => {
+        const active = option.key === range;
+
+        return (
+          <button
+            key={option.key}
+            type="button"
+            disabled={disabled}
+            onClick={() => setRange(option.key)}
+            className={`min-w-[120px] rounded-2xl px-4 py-3 text-sm font-extrabold tracking-[0.08em] transition sm:min-w-[140px] ${
+              active
+                ? "bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+                : disabled
+                ? "cursor-not-allowed bg-white/[0.04] text-white/35"
+                : "bg-white/[0.04] text-white/75 hover:bg-white/[0.10] hover:text-white"
+            }`}
+          >
+            {option.label.toUpperCase()}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function TeamModal({
   entry,
   mode,
@@ -529,6 +584,7 @@ function TeamModal({
 
 export default function LeaderboardPage() {
   const [mode, setMode] = useState<StatMode>("sc_points");
+  const [range, setRange] = useState<LeaderboardRange>("all_time");
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [topScore, setTopScore] = useState(0);
   const [topName, setTopName] = useState("—");
@@ -538,14 +594,15 @@ export default function LeaderboardPage() {
   const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null);
 
   const modeMeta = useMemo(() => getModeMeta(mode), [mode]);
+  const rangeMeta = useMemo(() => getRangeMeta(range), [range]);
 
-  async function loadLeaderboard(selectedMode: StatMode) {
+  async function loadLeaderboard(selectedMode: StatMode, selectedRange: LeaderboardRange) {
     try {
       setLoading(true);
       setError("");
 
       const res = await fetch(
-        `/api/ranked/top?mode=${encodeURIComponent(selectedMode)}`,
+        `/api/ranked/top?mode=${encodeURIComponent(selectedMode)}&period=${encodeURIComponent(selectedRange)}`,
         { cache: "no-store" }
       );
 
@@ -576,6 +633,11 @@ export default function LeaderboardPage() {
       if (savedMode && MODE_OPTIONS.some((option) => option.key === savedMode)) {
         setMode(savedMode as StatMode);
       }
+
+      const savedRange = localStorage.getItem("leaderboard_selected_range_2026");
+      if (savedRange && RANGE_OPTIONS.some((option) => option.key === savedRange)) {
+        setRange(savedRange as LeaderboardRange);
+      }
     } catch {}
   }, []);
 
@@ -586,8 +648,14 @@ export default function LeaderboardPage() {
   }, [mode]);
 
   useEffect(() => {
-    loadLeaderboard(mode);
-  }, [mode]);
+    try {
+      localStorage.setItem("leaderboard_selected_range_2026", range);
+    } catch {}
+  }, [range]);
+
+  useEffect(() => {
+    loadLeaderboard(mode, range);
+  }, [mode, range]);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
@@ -596,11 +664,15 @@ export default function LeaderboardPage() {
       <div className="relative z-10 mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
-            GLOBAL LEADERBOARD
+            {rangeMeta.label.toUpperCase()} LEADERBOARD
           </h1>
           <div className="mt-2 text-sm font-semibold text-white/70 sm:text-base">
             Ranked runs across every stat mode
           </div>
+        </div>
+
+        <div className="mt-5 sm:mt-6">
+          <RangeTabs range={range} setRange={setRange} disabled={loading} />
         </div>
 
         <div className="mt-5 flex justify-center sm:mt-6">
@@ -621,7 +693,7 @@ export default function LeaderboardPage() {
             <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
               HIGH SCORE
             </div>
-            <div className="mt-3 flex items-end gap-2 flex-wrap">
+            <div className="mt-3 flex flex-wrap items-end gap-2">
               <span className="bg-gradient-to-b from-[#fff7c2] via-[#f2cf63] to-[#c78a18] bg-clip-text text-4xl font-extrabold leading-none text-transparent sm:text-5xl">
                 {loading ? "..." : formatStatValue(topScore, mode)}
               </span>
@@ -664,7 +736,7 @@ export default function LeaderboardPage() {
             <div className="px-4 py-12 text-center sm:px-6">
               <div className="text-xl font-extrabold text-white">No scores yet</div>
               <div className="mt-2 text-sm font-semibold text-white/60">
-                Be the first to submit a ranked score in {modeMeta.label}.
+                Be the first to submit a {rangeMeta.label.toLowerCase()} ranked score in {modeMeta.label}.
               </div>
             </div>
           ) : (
