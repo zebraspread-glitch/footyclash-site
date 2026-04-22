@@ -7,6 +7,7 @@ import {
   Globe,
   Trophy,
   BarChart3,
+  CalendarDays,
 } from "lucide-react";
 
 const modes = [
@@ -46,9 +47,17 @@ const modes = [
 
 const middleModes = [
   {
+    href: "/daily",
+    title: "DAILY MODE",
+    description: "Play the daily challenge and compare your result to the best possible team.",
+    button: "PLAY DAILY →",
+    color: "indigo",
+    icon: CalendarDays,
+  },
+  {
     href: "/ranked",
     title: "RANKED MODE",
-    description: "Climb the ladder and test yourself in competitive matches.",
+    description: "Try and get higher than Cody Welch on the leaderboard.",
     button: "PLAY RANKED →",
     color: "cyan",
     icon: Trophy,
@@ -148,13 +157,20 @@ const colorStyles: Record<
     text: "text-white",
     glow: "group-hover:shadow-[0_20px_60px_rgba(219,39,119,0.35)]",
   },
+  indigo: {
+    bg: "bg-indigo-600",
+    border: "hover:border-indigo-300",
+    icon: "text-white",
+    text: "text-white",
+    glow: "group-hover:shadow-[0_20px_60px_rgba(79,70,229,0.35)]",
+  },
   white: {
-  bg: "bg-white",
-  border: "hover:border-gray-300",
-  icon: "text-black",
-  text: "text-black",
-  glow: "group-hover:shadow-[0_20px_60px_rgba(255,255,255,0.25)]",
-},
+    bg: "bg-white",
+    border: "hover:border-gray-300",
+    icon: "text-black",
+    text: "text-black",
+    glow: "group-hover:shadow-[0_20px_60px_rgba(255,255,255,0.25)]",
+  },
 };
 
 export default function HomePage() {
@@ -164,7 +180,6 @@ export default function HomePage() {
 
       <div className="relative z-10">
         <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
-          {/* TITLE */}
           <div className="mb-10 text-center">
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
               FootyClash
@@ -174,7 +189,6 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* MAIN MODES */}
           <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             {modes.map((mode) => {
               const styles = colorStyles[mode.color];
@@ -191,9 +205,7 @@ export default function HomePage() {
                   <div className="flex h-full flex-col">
                     <div>
                       <Icon className={`${styles.icon} mb-8`} size={40} />
-                      <h2 className="text-3xl font-black italic">
-                        {mode.title}
-                      </h2>
+                      <h2 className="text-3xl font-black italic">{mode.title}</h2>
                     </div>
 
                     <div className="mt-auto">
@@ -208,8 +220,7 @@ export default function HomePage() {
             })}
           </section>
 
-          {/* RANKED + LEADERBOARD */}
-          <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
             {middleModes.map((mode) => {
               const styles = colorStyles[mode.color];
               const Icon = mode.icon;
@@ -225,9 +236,7 @@ export default function HomePage() {
                   <div className="flex h-full flex-col">
                     <div>
                       <Icon className={`${styles.icon} mb-6`} size={40} />
-                      <h2 className="text-3xl font-black italic">
-                        {mode.title}
-                      </h2>
+                      <h2 className="text-3xl font-black italic">{mode.title}</h2>
                     </div>
 
                     <div className="mt-auto">
@@ -242,7 +251,6 @@ export default function HomePage() {
             })}
           </section>
 
-          {/* EXTRA BOXES */}
           <section className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-2">
             {extraModes.map((mode) => {
               const styles = colorStyles[mode.color];
@@ -268,9 +276,7 @@ export default function HomePage() {
                             : "scale-100"
                         }`}
                       />
-                      <h2 className="text-2xl font-black italic">
-                        {mode.title}
-                      </h2>
+                      <h2 className="text-2xl font-black italic">{mode.title}</h2>
                     </div>
 
                     <div className="mt-auto">
