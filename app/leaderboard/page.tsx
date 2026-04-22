@@ -65,6 +65,12 @@ function formatStatValue(value: number, mode: StatMode) {
   return Number(value || 0).toFixed(1);
 }
 
+function formatSlotLabel(key: string) {
+  return key
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function rankColor(rank: number) {
   if (rank === 1) return "text-[#ffbf2f]";
   if (rank === 2) return "text-white";
@@ -177,6 +183,101 @@ function ModeDropdown({
   );
 }
 
+function TeamModal({
+  entry,
+  mode,
+  onClose,
+}: {
+  entry: LeaderboardEntry | null;
+  mode: StatMode;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    if (!entry) return;
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [entry, onClose]);
+
+  if (!entry) return null;
+
+  const teamEntries = Object.entries(entry.team ?? {}).filter(
+    ([, value]) => value && String(value).trim() !== ""
+  );
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-3 py-6"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl overflow-hidden rounded-[24px] border border-white/12 bg-[#101317] shadow-[0_20px_80px_rgba(0,0,0,0.55)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-[#253047] px-4 py-4 sm:px-6">
+          <div className="min-w-0">
+            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
+              VIEW TEAM
+            </div>
+            <div className="mt-2 truncate text-xl font-extrabold text-white sm:text-2xl">
+              {entry.name}
+            </div>
+            <div className="mt-1 text-sm font-semibold text-white/65">
+              Score: {formatStatValue(entry.score, mode)}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 rounded-xl border border-white/12 bg-white/5 px-3 py-2 text-sm font-extrabold text-white/80 transition hover:bg-white/10 hover:text-white"
+          >
+            CLOSE
+          </button>
+        </div>
+
+        <div className="max-h-[70vh] overflow-y-auto px-4 py-4 sm:px-6">
+          {teamEntries.length === 0 ? (
+            <div className="py-8 text-center">
+              <div className="text-lg font-extrabold text-white">
+                No saved team found
+              </div>
+              <div className="mt-2 text-sm font-semibold text-white/60">
+                This entry does not have team data attached.
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {teamEntries.map(([slot, player]) => (
+                <div
+                  key={slot}
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                >
+                  <div className="text-[10px] font-extrabold tracking-[0.18em] text-white/40">
+                    {formatSlotLabel(slot)}
+                  </div>
+                  <div className="mt-2 text-base font-extrabold text-white">
+                    {player}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LeaderboardPage() {
   const [mode, setMode] = useState<StatMode>("sc_points");
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -185,6 +286,7 @@ export default function LeaderboardPage() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null);
 
   const modeMeta = useMemo(() => getModeMeta(mode), [mode]);
 
@@ -291,10 +393,11 @@ export default function LeaderboardPage() {
         </div>
 
         <div className="mt-6 overflow-hidden rounded-[24px] border border-[#2f3b52] bg-[#101317]/95 shadow-[0_20px_80px_rgba(0,0,0,0.45)] sm:mt-8">
-          <div className="grid grid-cols-[88px_minmax(0,1fr)_120px] border-b border-[#253047] px-4 py-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/70 sm:grid-cols-[100px_minmax(0,1fr)_160px] sm:px-6">
+          <div className="grid grid-cols-[72px_minmax(0,1fr)_90px_110px] border-b border-[#253047] px-4 py-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/70 sm:grid-cols-[100px_minmax(0,1fr)_160px_140px] sm:px-6">
             <div>Rank</div>
             <div>User</div>
             <div>High Score</div>
+            <div className="text-right">Team</div>
           </div>
 
           {error ? (
@@ -320,7 +423,7 @@ export default function LeaderboardPage() {
               {entries.map((entry) => (
                 <div
                   key={`${entry.id ?? entry.name}-${entry.rank}-${entry.score}`}
-                  className="grid grid-cols-[88px_minmax(0,1fr)_120px] items-center border-b border-[#253047] px-4 py-4 transition hover:bg-white/[0.03] sm:grid-cols-[100px_minmax(0,1fr)_160px] sm:px-6"
+                  className="grid grid-cols-[72px_minmax(0,1fr)_90px_110px] items-center gap-2 border-b border-[#253047] px-4 py-4 transition hover:bg-white/[0.03] sm:grid-cols-[100px_minmax(0,1fr)_160px_140px] sm:px-6"
                 >
                   <div className={`text-xl font-extrabold ${rankColor(entry.rank)}`}>
                     {entry.rank}
@@ -335,12 +438,28 @@ export default function LeaderboardPage() {
                   <div className={`text-base font-extrabold sm:text-xl ${scoreColor(entry.rank)}`}>
                     {formatStatValue(entry.score, mode)}
                   </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedEntry(entry)}
+                      className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-[11px] font-extrabold tracking-[0.14em] text-cyan-300 transition hover:border-cyan-300/50 hover:bg-cyan-300/15 hover:text-cyan-200 sm:text-xs"
+                    >
+                      VIEW TEAM
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      <TeamModal
+        entry={selectedEntry}
+        mode={mode}
+        onClose={() => setSelectedEntry(null)}
+      />
     </main>
   );
 }
