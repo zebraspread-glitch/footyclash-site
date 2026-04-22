@@ -93,76 +93,76 @@ const CLUB_LOGOS: Record<string, string> = {
 
 const CLUB_THEMES: Record<string, ClubTheme> = {
   Adelaide: {
-    row: "bg-[#97004a] border-[#d84c87] text-[#ffe100]",
-    pill: "bg-[#7e003d] border-[#6b0034] text-[#ffe100]",
+    row: "bg-[#002b5c] text-[#ffd200]",
+    pill: "bg-[#002b5c] text-[#ffd200]",
   },
   "Brisbane Lions": {
-    row: "bg-[#7b1733] border-[#b45973] text-[#f1c24b]",
-    pill: "bg-[#651229] border-[#541021] text-[#f1c24b]",
+    row: "bg-[#7c1f3a] text-[#fdb827]",
+    pill: "bg-[#7c1f3a] text-[#fdb827]",
   },
   Carlton: {
-    row: "bg-[#0b2f6b] border-[#3d68b0] text-white",
-    pill: "bg-[#082654] border-[#061d40] text-white",
+    row: "bg-[#031a29] text-white",
+    pill: "bg-[#031a29] text-white",
   },
   Collingwood: {
-    row: "bg-black border-[#444] text-white",
-    pill: "bg-[#111] border-[#333] text-white",
+    row: "bg-black text-white",
+    pill: "bg-black text-white",
   },
   Essendon: {
-    row: "bg-[#111111] border-[#404040] text-[#ff3d3d]",
-    pill: "bg-[#1d1d1d] border-[#2d2d2d] text-[#ff3d3d]",
+    row: "bg-black text-[#e41c23]",
+    pill: "bg-black text-[#e41c23]",
   },
   Fremantle: {
-    row: "bg-[#2a0f50] border-[#7350aa] text-white",
-    pill: "bg-[#210c3f] border-[#1a0932] text-white",
+    row: "bg-[#2a0f50] text-white",
+    pill: "bg-[#2a0f50] text-white",
   },
   Geelong: {
-    row: "bg-[#123c7b] border-[#4771b8] text-white",
-    pill: "bg-[#0d305f] border-[#0a2449] text-white",
+    row: "bg-[#002b5c] text-white",
+    pill: "bg-[#002b5c] text-white",
   },
   "Gold Coast": {
-    row: "bg-[#f75c1e] border-[#ff8d60] text-black",
-    pill: "bg-[#d85a20] border-[#b94a17] text-black",
-  },
+  row: "bg-[#d71920] text-[#ffd200]",
+  pill: "bg-[#d71920] text-[#ffd200]",
+},
   GWS: {
-    row: "bg-[#f15a22] border-[#ff8c5a] text-white",
-    pill: "bg-[#cc4e1d] border-[#a83f17] text-white",
+    row: "bg-[#f15a22] text-white",
+    pill: "bg-[#f15a22] text-white",
   },
   Hawthorn: {
-    row: "bg-[#4a2b18] border-[#86603f] text-[#f4c542]",
-    pill: "bg-[#3a2213] border-[#2f1b0f] text-[#f4c542]",
+    row: "bg-[#4a2b18] text-[#fdb827]",
+    pill: "bg-[#4a2b18] text-[#fdb827]",
   },
   Melbourne: {
-    row: "bg-[#d70000] border-[#ff5454] text-[#ffe100]",
-    pill: "bg-[#b30000] border-[#930000] text-[#ffe100]",
+    row: "bg-[#0c2340] text-[#e41c23]",
+    pill: "bg-[#0c2340] text-[#e41c23]",
   },
   "North Melbourne": {
-    row: "bg-[#1f5fcb] border-[#5f8fe3] text-white",
-    pill: "bg-[#184da4] border-[#123c80] text-white",
+    row: "bg-[#1f5fcb] text-white",
+    pill: "bg-[#1f5fcb] text-white",
   },
   "Port Adelaide": {
-    row: "bg-[#11427d] border-[#4d77b3] text-white",
-    pill: "bg-[#0d3563] border-[#0a284b] text-white",
+    row: "bg-[#008aab] text-white",
+    pill: "bg-[#008aab] text-white",
   },
   Richmond: {
-    row: "bg-black border-[#3f3f3f] text-[#ffe100]",
-    pill: "bg-[#1b1b1b] border-[#2b2b2b] text-[#ffe100]",
+    row: "bg-black text-[#ffd200]",
+    pill: "bg-black text-[#ffd200]",
   },
   "St Kilda": {
-    row: "bg-[#d40000] border-[#ff6b6b] text-white",
-    pill: "bg-[#a80000] border-[#800000] text-white",
+    row: "bg-[#e41c23] text-white",
+    pill: "bg-[#e41c23] text-white",
   },
   Sydney: {
-    row: "bg-[#c4002f] border-[#ef5677] text-white",
-    pill: "bg-[#9d0026] border-[#7d001e] text-white",
+    row: "bg-[#e41c23] text-white",
+    pill: "bg-[#e41c23] text-white",
   },
   "West Coast": {
-    row: "bg-[#1fa6d8] border-[#62caef] text-black",
-    pill: "bg-[#1890bb] border-[#127799] text-black",
+    row: "bg-[#003087] text-[#fdb827]",
+    pill: "bg-[#003087] text-[#fdb827]",
   },
   "Western Bulldogs": {
-    row: "bg-[#114fb6] border-[#4b82dd] text-white",
-    pill: "bg-[#0d3f92] border-[#0a316f] text-white",
+    row: "bg-[#003087] text-[#e41c23]",
+    pill: "bg-[#003087] text-[#e41c23]",
   },
 };
 
