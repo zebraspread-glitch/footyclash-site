@@ -908,12 +908,18 @@ export default function DailyPage() {
             DAILY GAME ({todayLabel})
           </h1>
 
-          <div className="mt-3 text-sm font-extrabold text-white sm:text-base">
-            YOUR SCORE: {formatStatValue(currentScore, dailyMode)} {modeMeta.short}
-            <span className={`ml-2 ${currentTier.textClass}`}>
-              | {percent.toFixed(1)}% ({currentTier.label.toUpperCase()})
-            </span>
-          </div>
+          <div className="mt-3 flex flex-col items-center gap-3">
+  <div className="rounded-full border border-yellow-400/60 bg-yellow-400/15 px-5 py-2 text-sm font-black uppercase tracking-[0.18em] text-yellow-300 shadow-[0_8px_24px_rgba(250,204,21,0.18)] sm:text-base">
+    Category: {modeMeta.label}
+  </div>
+
+  <div className="text-sm font-extrabold text-white sm:text-base">
+    YOUR SCORE: {formatStatValue(currentScore, dailyMode)} {modeMeta.short}
+    <span className={`ml-2 ${currentTier.textClass}`}>
+      | {percent.toFixed(1)}% ({currentTier.label.toUpperCase()})
+    </span>
+  </div>
+</div>
         </div>
 
         <div className="mt-7 sm:mt-8">
