@@ -50,6 +50,11 @@ type PlayerRecord = {
   metres_gained?: number;
 };
 
+type ClubTheme = {
+  row: string;
+  pill: string;
+};
+
 const MODE_OPTIONS: ModeOption[] = [
   { key: "age", label: "Age", short: "AGE" },
   { key: "number", label: "Jumper Number", short: "#" },
@@ -86,25 +91,79 @@ const CLUB_LOGOS: Record<string, string> = {
   "Western Bulldogs": "/team-logos/bulldogs.png",
 };
 
-const CLUB_ROW_STYLES: Record<string, string> = {
-  Adelaide: "bg-[#97004a] border-[#d84c87] text-[#ffe100]",
-  "Brisbane Lions": "bg-[#7c1235] border-[#b84d70] text-[#f4c542]",
-  Carlton: "bg-[#0b2f6b] border-[#3e6dbe] text-white",
-  Collingwood: "bg-[#1d3f7a] border-[#4d74bb] text-white",
-  Essendon: "bg-[#141414] border-[#4a4a4a] text-[#ff4d4d]",
-  Fremantle: "bg-[#2b0f4f] border-[#7a52b3] text-white",
-  Geelong: "bg-[#123c7b] border-[#4974b9] text-white",
-  "Gold Coast": "bg-[#f75c1e] border-[#ff8d60] text-black",
-  GWS: "bg-[#172e66] border-[#4e6dad] text-white",
-  Hawthorn: "bg-[#4b2c17] border-[#8b5a34] text-[#f4c542]",
-  Melbourne: "bg-[#d70000] border-[#ff5454] text-[#ffe100]",
-  "North Melbourne": "bg-[#2158b8] border-[#5b8ae0] text-white",
-  "Port Adelaide": "bg-[#14437d] border-[#4a77b0] text-white",
-  Richmond: "bg-[#111111] border-[#444444] text-[#ffe100]",
-  "St Kilda": "bg-[#2158b8] border-[#5b8ae0] text-white",
-  Sydney: "bg-[#c4002f] border-[#ef5677] text-white",
-  "West Coast": "bg-[#1ea4d8] border-[#62caef] text-black",
-  "Western Bulldogs": "bg-[#114fb6] border-[#4c82dd] text-white",
+const CLUB_THEMES: Record<string, ClubTheme> = {
+  Adelaide: {
+    row: "bg-[#97004a] border-[#d84c87] text-[#ffe100]",
+    pill: "bg-[#7e003d] border-[#6b0034] text-[#ffe100]",
+  },
+  "Brisbane Lions": {
+    row: "bg-[#7b1733] border-[#b45973] text-[#f1c24b]",
+    pill: "bg-[#651229] border-[#541021] text-[#f1c24b]",
+  },
+  Carlton: {
+    row: "bg-[#0b2f6b] border-[#3d68b0] text-white",
+    pill: "bg-[#082654] border-[#061d40] text-white",
+  },
+  Collingwood: {
+    row: "bg-[#1c3f7a] border-[#4b71b7] text-white",
+    pill: "bg-[#173462] border-[#11284b] text-white",
+  },
+  Essendon: {
+    row: "bg-[#111111] border-[#404040] text-[#ff3d3d]",
+    pill: "bg-[#1d1d1d] border-[#2d2d2d] text-[#ff3d3d]",
+  },
+  Fremantle: {
+    row: "bg-[#2a0f50] border-[#7350aa] text-white",
+    pill: "bg-[#210c3f] border-[#1a0932] text-white",
+  },
+  Geelong: {
+    row: "bg-[#123c7b] border-[#4771b8] text-white",
+    pill: "bg-[#0d305f] border-[#0a2449] text-white",
+  },
+  "Gold Coast": {
+    row: "bg-[#f75c1e] border-[#ff8d60] text-black",
+    pill: "bg-[#d85a20] border-[#b94a17] text-black",
+  },
+  GWS: {
+    row: "bg-[#193d7a] border-[#4d70b6] text-white",
+    pill: "bg-[#14315f] border-[#10264a] text-white",
+  },
+  Hawthorn: {
+    row: "bg-[#4a2b18] border-[#86603f] text-[#f4c542]",
+    pill: "bg-[#3a2213] border-[#2f1b0f] text-[#f4c542]",
+  },
+  Melbourne: {
+    row: "bg-[#d70000] border-[#ff5454] text-[#ffe100]",
+    pill: "bg-[#b30000] border-[#930000] text-[#ffe100]",
+  },
+  "North Melbourne": {
+    row: "bg-[#1f5fcb] border-[#5f8fe3] text-white",
+    pill: "bg-[#184da4] border-[#123c80] text-white",
+  },
+  "Port Adelaide": {
+    row: "bg-[#11427d] border-[#4d77b3] text-white",
+    pill: "bg-[#0d3563] border-[#0a284b] text-white",
+  },
+  Richmond: {
+    row: "bg-[#111111] border-[#3f3f3f] text-[#ffe100]",
+    pill: "bg-[#1b1b1b] border-[#2b2b2b] text-[#ffe100]",
+  },
+  "St Kilda": {
+    row: "bg-[#2158b8] border-[#5b8ae0] text-white",
+    pill: "bg-[#194692] border-[#13366f] text-white",
+  },
+  Sydney: {
+    row: "bg-[#c4002f] border-[#ef5677] text-white",
+    pill: "bg-[#9d0026] border-[#7d001e] text-white",
+  },
+  "West Coast": {
+    row: "bg-[#1fa6d8] border-[#62caef] text-black",
+    pill: "bg-[#1890bb] border-[#127799] text-black",
+  },
+  "Western Bulldogs": {
+    row: "bg-[#114fb6] border-[#4b82dd] text-white",
+    pill: "bg-[#0d3f92] border-[#0a316f] text-white",
+  },
 };
 
 const playerMap: Record<string, PlayerRecord> = Object.fromEntries(
@@ -196,8 +255,13 @@ function getPlayerModeScore(playerValue: string | null, mode: StatMode) {
   return value;
 }
 
-function getPlayerRowStyleByClub(club: string) {
-  return CLUB_ROW_STYLES[club] ?? "bg-[#173b76] border-[#4c73b3] text-white";
+function getClubTheme(club: string): ClubTheme {
+  return (
+    CLUB_THEMES[club] ?? {
+      row: "bg-[#173b76] border-[#4c73b3] text-white",
+      pill: "bg-[#12305e] border-[#0d2447] text-white",
+    }
+  );
 }
 
 function ModeDropdown({
@@ -386,7 +450,7 @@ function TeamModal({
               const club = getPlayerClub(player);
               const logo = getPlayerLogo(player);
               const playerScore = getPlayerModeScore(player, mode);
-              const rowStyle = getPlayerRowStyleByClub(club);
+              const theme = getClubTheme(club);
 
               return (
                 <div
@@ -398,7 +462,7 @@ function TeamModal({
                   </div>
 
                   <div
-                    className={`flex min-h-[58px] items-center justify-between gap-3 rounded-2xl border px-4 shadow-[0_8px_24px_rgba(0,0,0,0.22)] sm:min-h-[62px] sm:px-6 ${rowStyle}`}
+                    className={`flex min-h-[58px] items-center justify-between gap-3 rounded-2xl border px-4 shadow-[0_8px_24px_rgba(0,0,0,0.22)] sm:min-h-[62px] sm:px-6 ${theme.row}`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/10 sm:h-12 sm:w-12">
@@ -422,14 +486,16 @@ function TeamModal({
                           {displayName}
                         </div>
                         {club ? (
-                          <div className="truncate text-xs font-bold opacity-80 sm:text-sm">
+                          <div className="truncate text-xs font-bold opacity-90 sm:text-sm">
                             {club}
                           </div>
                         ) : null}
                       </div>
                     </div>
 
-                    <div className="shrink-0 rounded-2xl border border-black/20 bg-black/20 px-3 py-2 text-sm font-black tracking-[0.05em] sm:px-4 sm:text-base">
+                    <div
+                      className={`shrink-0 rounded-2xl border px-3 py-2 text-sm font-black tracking-[0.05em] sm:px-4 sm:text-base ${theme.pill}`}
+                    >
                       {playerScore !== null
                         ? `${formatStatValue(playerScore, mode)} ${getModeMeta(mode).short}`
                         : `0 ${getModeMeta(mode).short}`}
