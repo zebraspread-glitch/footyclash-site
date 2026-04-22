@@ -105,8 +105,8 @@ const CLUB_THEMES: Record<string, ClubTheme> = {
     pill: "bg-[#082654] border-[#061d40] text-white",
   },
   Collingwood: {
-    row: "bg-[#1c3f7a] border-[#4b71b7] text-white",
-    pill: "bg-[#173462] border-[#11284b] text-white",
+    row: "bg-black border-[#444] text-white",
+    pill: "bg-[#111] border-[#333] text-white",
   },
   Essendon: {
     row: "bg-[#111111] border-[#404040] text-[#ff3d3d]",
@@ -125,8 +125,8 @@ const CLUB_THEMES: Record<string, ClubTheme> = {
     pill: "bg-[#d85a20] border-[#b94a17] text-black",
   },
   GWS: {
-    row: "bg-[#193d7a] border-[#4d70b6] text-white",
-    pill: "bg-[#14315f] border-[#10264a] text-white",
+    row: "bg-[#f15a22] border-[#ff8c5a] text-white",
+    pill: "bg-[#cc4e1d] border-[#a83f17] text-white",
   },
   Hawthorn: {
     row: "bg-[#4a2b18] border-[#86603f] text-[#f4c542]",
@@ -145,12 +145,12 @@ const CLUB_THEMES: Record<string, ClubTheme> = {
     pill: "bg-[#0d3563] border-[#0a284b] text-white",
   },
   Richmond: {
-    row: "bg-[#111111] border-[#3f3f3f] text-[#ffe100]",
+    row: "bg-black border-[#3f3f3f] text-[#ffe100]",
     pill: "bg-[#1b1b1b] border-[#2b2b2b] text-[#ffe100]",
   },
   "St Kilda": {
-    row: "bg-[#2158b8] border-[#5b8ae0] text-white",
-    pill: "bg-[#194692] border-[#13366f] text-white",
+    row: "bg-[#d40000] border-[#ff6b6b] text-white",
+    pill: "bg-[#a80000] border-[#800000] text-white",
   },
   Sydney: {
     row: "bg-[#c4002f] border-[#ef5677] text-white",
@@ -255,9 +255,24 @@ function getPlayerModeScore(playerValue: string | null, mode: StatMode) {
   return value;
 }
 
+function normalizeClubName(club: string): string {
+  if (!club) return "";
+
+  if (club === "Brisbane") return "Brisbane Lions";
+  if (club === "Fremantle Dockers") return "Fremantle";
+  if (club === "Gold Coast Suns") return "Gold Coast";
+  if (club === "GWS Giants") return "GWS";
+  if (club === "West Coast Eagles") return "West Coast";
+  if (club === "Sydney Swans") return "Sydney";
+
+  return club;
+}
+
 function getClubTheme(club: string): ClubTheme {
+  const normalized = normalizeClubName(club);
+
   return (
-    CLUB_THEMES[club] ?? {
+    CLUB_THEMES[normalized] ?? {
       row: "bg-[#173b76] border-[#4c73b3] text-white",
       pill: "bg-[#12305e] border-[#0d2447] text-white",
     }
