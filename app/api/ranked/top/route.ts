@@ -10,6 +10,16 @@ type RankedRow = {
   team_json: unknown;
 };
 
+function getStartOfWeekMonday() {
+  const now = new Date();
+  const start = new Date(now);
+  const day = start.getDay(); // 0 = Sunday
+  const diff = day === 0 ? 6 : day - 1;
+  start.setDate(start.getDate() - diff);
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -26,11 +36,33 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const mode = searchParams.get("mode") ?? "sc_points";
+    const period = searchParams.get("period") ?? "all_time";
 
-    const { data, error } = await supabase
+    let fromDate: Date | null = null;
+
+    if (period === "daily") {
+      fromDate = new Date();
+      fromDate.setHours(0, 0, 0, 0);
+    } else if (period === "weekly") {
+      fromDate = getStartOfWeekMonday();
+    } else if (period === "monthly") {
+      fromDate = new Date();
+      fromDate.setDate(1);
+      fromDate.setHours(0, 0, 0, 0);
+    } else if (period === "all_time") {
+      fromDate = null;
+    }
+
+    let query = supabase
       .from("ranked_scores")
       .select("id, name, mode, score, created_at, team_json")
-      .eq("mode", mode)
+      .eq("mode", mode);
+
+    if (fromDate) {
+      query = query.gte("created_at", fromDate.toISOString());
+    }
+
+    const { data, error } = await query
       .order("score", { ascending: false })
       .order("created_at", { ascending: true })
       .limit(100);
