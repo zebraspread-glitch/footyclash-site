@@ -243,7 +243,8 @@ function getPlayerClub(playerValue: string | null) {
 
 function getPlayerLogo(playerValue: string | null) {
   const club = getPlayerClub(playerValue);
-  return CLUB_LOGOS[club] ?? "";
+  const normalized = normalizeClubName(club);
+  return CLUB_LOGOS[normalized] ?? "";
 }
 
 function getPlayerModeScore(playerValue: string | null, mode: StatMode) {
@@ -432,7 +433,7 @@ function TeamModal({
               {entry.name}
             </div>
             <div className="mt-2 text-sm font-bold text-white/70 sm:text-base">
-              Exact team for score:{" "}
+              Score:{" "}
               <span className="text-[#ffd25f]">
                 {formatStatValue(entry.score, mode)} {getModeMeta(mode).short}
               </span>
