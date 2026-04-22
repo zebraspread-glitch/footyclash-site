@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Script from "next/script";
 import players2026 from "@/app/data/afl_players26.json";
 
 /** ================= Types ================= */
@@ -327,6 +328,180 @@ function getAllHighScoreEntries(): HighScoreEntry[] {
       value,
     };
   });
+}
+
+/** ================= Ads ================= */
+function DesktopBannerAd() {
+  const holderRef = useRef<HTMLDivElement | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder) return;
+
+    setMounted(true);
+    holder.innerHTML = "";
+
+    const configScript = document.createElement("script");
+    configScript.type = "text/javascript";
+    configScript.innerHTML = `
+      atOptions = {
+        'key' : '46f96e095682d833adea83e7b93f975a',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    `;
+
+    const invokeScript = document.createElement("script");
+    invokeScript.type = "text/javascript";
+    invokeScript.src =
+      "https://www.highperformanceformat.com/46f96e095682d833adea83e7b93f975a/invoke.js";
+    invokeScript.async = true;
+
+    holder.appendChild(configScript);
+    holder.appendChild(invokeScript);
+
+    return () => {
+      holder.innerHTML = "";
+    };
+  }, []);
+
+  return (
+    <div className="hidden md:block">
+      <div className="overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+        <div className="mb-2 text-center text-[10px] font-extrabold tracking-[0.24em] text-white/40">
+          SPONSORED
+        </div>
+        <div className="flex justify-center overflow-x-auto">
+          <div className="flex w-full justify-center">
+            <div
+              ref={holderRef}
+              className="flex min-h-[90px] min-w-[728px] justify-center"
+            />
+          </div>
+        </div>
+        {!mounted ? null : null}
+      </div>
+    </div>
+  );
+}
+
+function MobileBannerAd() {
+  const holderRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder) return;
+
+    holder.innerHTML = "";
+
+    const configScript = document.createElement("script");
+    configScript.type = "text/javascript";
+    configScript.innerHTML = `
+      atOptions = {
+        'key' : 'c84e7e3e20355404976b4853cf2b94ad',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    `;
+
+    const invokeScript = document.createElement("script");
+    invokeScript.type = "text/javascript";
+    invokeScript.src =
+      "https://www.highperformanceformat.com/c84e7e3e20355404976b4853cf2b94ad/invoke.js";
+    invokeScript.async = true;
+
+    holder.appendChild(configScript);
+    holder.appendChild(invokeScript);
+
+    return () => {
+      holder.innerHTML = "";
+    };
+  }, []);
+
+  return (
+    <div className="md:hidden">
+      <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3 shadow-[0_18px_50px_rgba(0,0,0,0.3)] backdrop-blur-2xl">
+        <div className="mb-2 text-center text-[10px] font-extrabold tracking-[0.24em] text-white/40">
+          SPONSORED
+        </div>
+        <div className="flex justify-center">
+          <div ref={holderRef} className="flex min-h-[50px] min-w-[320px] max-w-[320px] justify-center" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NativeBannerAd() {
+  const holderRef = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder) return;
+
+    setVisible(true);
+    holder.innerHTML = "";
+
+    const invokeScript = document.createElement("script");
+    invokeScript.async = true;
+    invokeScript.setAttribute("data-cfasync", "false");
+    invokeScript.src =
+      "https://pl29221282.profitablecpmratenetwork.com/32115903d25f9a19c411cb00d051e98e/invoke.js";
+
+    const container = document.createElement("div");
+    container.id = "container-32115903d25f9a19c411cb00d051e98e";
+    container.style.width = "100%";
+
+    holder.appendChild(invokeScript);
+    holder.appendChild(container);
+
+    const checkTimer = window.setTimeout(() => {
+      const hasContent =
+        holder.childElementCount > 0 &&
+        holder.innerText.trim().length > 0 ||
+        holder.querySelector("iframe") ||
+        holder.querySelector("img") ||
+        holder.querySelector("a") ||
+        container.childElementCount > 0;
+
+      if (!hasContent) {
+        setVisible(false);
+      }
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(checkTimer);
+      holder.innerHTML = "";
+    };
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className="overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(8,32,54,0.88),rgba(6,16,28,0.96))] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl sm:p-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/40">
+            SPONSORED
+          </div>
+          <div className="mt-1 text-sm font-bold text-white/75 sm:text-base">
+            Featured partner
+          </div>
+        </div>
+      </div>
+
+      <div
+        ref={holderRef}
+        className="min-h-[120px] overflow-hidden rounded-[18px] border border-white/8 bg-black/20"
+      />
+    </div>
+  );
 }
 
 /** ================= Animated Dropdown ================= */
@@ -715,9 +890,15 @@ export default function SoloPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
-  <div className="pointer-events-none absolute inset-0 bg-black/35" />
+      <Script
+        id="solo-popunder"
+        strategy="afterInteractive"
+        src="https://pl29221280.profitablecpmratenetwork.com/dd/3f/e2/dd3fe214e5d4ca795209f0ea035a483f.js"
+      />
 
-  <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
+      <div className="pointer-events-none absolute inset-0 bg-black/35" />
+
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
             SOLO MODE
@@ -729,6 +910,11 @@ export default function SoloPage() {
 
         <div className="mt-5 flex justify-center sm:mt-6">
           <ModeDropdown mode={mode} setMode={setMode} disabled={spinning} />
+        </div>
+
+        <div className="mt-6">
+          <DesktopBannerAd />
+          <MobileBannerAd />
         </div>
 
         <div className="mt-6 flex justify-center sm:mt-8">
@@ -893,6 +1079,19 @@ export default function SoloPage() {
               <span className="min-w-0 truncate">{displayClub.name.toUpperCase()}</span>
             </div>
           </div>
+        </div>
+
+        <div className="mt-8 sm:mt-10">
+          <NativeBannerAd />
+        </div>
+
+        <div className="mt-6 sm:mt-8 flex justify-center">
+          <button
+            onClick={resetGame}
+            className="rounded-2xl border border-white/15 bg-white/8 px-6 py-3 text-sm font-extrabold text-white/85 transition hover:border-white/30 hover:bg-white/12 hover:text-white sm:text-base"
+          >
+            RESET RUN
+          </button>
         </div>
       </div>
 

@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import Script from "next/script";
+import { useEffect, useMemo, useRef, useState } from "react";
 import players from "@/app/data/afl_players26.json";
 
 type StatMode =
@@ -303,6 +304,180 @@ function getClubTheme(club: string): ClubTheme {
       row: "bg-[#173b76] border-[#4c73b3] text-white",
       pill: "bg-[#12305e] border-[#0d2447] text-white",
     }
+  );
+}
+
+function DesktopBannerAd() {
+  const holderRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder) return;
+
+    holder.innerHTML = "";
+
+    const configScript = document.createElement("script");
+    configScript.type = "text/javascript";
+    configScript.innerHTML = `
+      atOptions = {
+        'key' : '46f96e095682d833adea83e7b93f975a',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    `;
+
+    const invokeScript = document.createElement("script");
+    invokeScript.type = "text/javascript";
+    invokeScript.src =
+      "https://www.highperformanceformat.com/46f96e095682d833adea83e7b93f975a/invoke.js";
+    invokeScript.async = true;
+
+    holder.appendChild(configScript);
+    holder.appendChild(invokeScript);
+
+    return () => {
+      holder.innerHTML = "";
+    };
+  }, []);
+
+  return (
+    <div className="hidden md:block">
+      <div className="overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+        <div className="mb-2 text-center text-[10px] font-extrabold tracking-[0.24em] text-white/40">
+          SPONSORED
+        </div>
+        <div className="flex justify-center overflow-x-auto">
+          <div ref={holderRef} className="min-h-[90px] min-w-[728px]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MobileBannerAd() {
+  const holderRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder) return;
+
+    holder.innerHTML = "";
+
+    const configScript = document.createElement("script");
+    configScript.type = "text/javascript";
+    configScript.innerHTML = `
+      atOptions = {
+        'key' : 'c84e7e3e20355404976b4853cf2b94ad',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    `;
+
+    const invokeScript = document.createElement("script");
+    invokeScript.type = "text/javascript";
+    invokeScript.src =
+      "https://www.highperformanceformat.com/c84e7e3e20355404976b4853cf2b94ad/invoke.js";
+    invokeScript.async = true;
+
+    holder.appendChild(configScript);
+    holder.appendChild(invokeScript);
+
+    return () => {
+      holder.innerHTML = "";
+    };
+  }, []);
+
+  return (
+    <div className="md:hidden">
+      <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3 shadow-[0_18px_50px_rgba(0,0,0,0.3)] backdrop-blur-2xl">
+        <div className="mb-2 text-center text-[10px] font-extrabold tracking-[0.24em] text-white/40">
+          SPONSORED
+        </div>
+        <div className="flex justify-center">
+          <div ref={holderRef} className="min-h-[50px] min-w-[320px] max-w-[320px]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NativeBannerAd() {
+  const holderRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder) return;
+
+    holder.innerHTML = "";
+
+    const invokeScript = document.createElement("script");
+    invokeScript.async = true;
+    invokeScript.setAttribute("data-cfasync", "false");
+    invokeScript.src =
+      "https://pl29221282.profitablecpmratenetwork.com/32115903d25f9a19c411cb00d051e98e/invoke.js";
+
+    const container = document.createElement("div");
+    container.id = "container-32115903d25f9a19c411cb00d051e98e";
+
+    holder.appendChild(invokeScript);
+    holder.appendChild(container);
+
+    return () => {
+      holder.innerHTML = "";
+    };
+  }, []);
+
+  return (
+    <div className="overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(8,32,54,0.88),rgba(6,16,28,0.96))] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl sm:p-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/40">
+            SPONSORED
+          </div>
+          <div className="mt-1 text-sm font-bold text-white/75 sm:text-base">
+            Featured partner
+          </div>
+        </div>
+      </div>
+
+      <div
+        ref={holderRef}
+        className="min-h-[120px] overflow-hidden rounded-[18px] border border-white/8 bg-black/20"
+      />
+    </div>
+  );
+}
+
+function SmartlinkCard() {
+  return (
+    <a
+      href="https://www.profitablecpmratenetwork.com/y0erddngwm?key=af7b91235eff15104ab9c36820d723e8"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block overflow-hidden rounded-[24px] border border-cyan-400/18 bg-[linear-gradient(135deg,rgba(20,35,58,0.95),rgba(8,18,30,0.98))] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.35)] transition hover:border-cyan-300/35 hover:bg-[linear-gradient(135deg,rgba(26,45,72,0.98),rgba(10,22,36,1))]"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <div className="text-[10px] font-extrabold tracking-[0.24em] text-cyan-300/65">
+            PARTNER LINK
+          </div>
+          <div className="mt-2 text-lg font-extrabold text-white sm:text-xl">
+            Check out today’s featured offer
+          </div>
+          <div className="mt-1 text-sm font-semibold text-white/60">
+            Opens in a new tab
+          </div>
+        </div>
+
+        <div className="shrink-0 rounded-2xl border border-cyan-300/25 bg-cyan-300/10 px-4 py-3 text-sm font-extrabold tracking-[0.12em] text-cyan-200 transition group-hover:border-cyan-200/40 group-hover:bg-cyan-300/15">
+          OPEN
+        </div>
+      </div>
+    </a>
   );
 }
 
@@ -727,6 +902,12 @@ export default function LeaderboardPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
+      <Script
+        id="leaderboard-popunder"
+        strategy="afterInteractive"
+        src="https://pl29221280.profitablecpmratenetwork.com/dd/3f/e2/dd3fe214e5d4ca795209f0ea035a483f.js"
+      />
+
       <div className="pointer-events-none absolute inset-0 bg-black/45" />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-10">
@@ -751,6 +932,11 @@ export default function LeaderboardPage() {
             sortedModes={sortedModes}
             modeCounts={modeCounts}
           />
+        </div>
+
+        <div className="mt-6">
+          <DesktopBannerAd />
+          <MobileBannerAd />
         </div>
 
         <div className="mt-6 grid gap-3 sm:mt-8 md:grid-cols-3">
@@ -785,6 +971,10 @@ export default function LeaderboardPage() {
               {loading ? "..." : totalEntries}
             </div>
           </div>
+        </div>
+
+        <div className="mt-6 sm:mt-8">
+          <NativeBannerAd />
         </div>
 
         <div className="mt-6 overflow-hidden rounded-[24px] border border-[#2f3b52] bg-[#101317]/95 shadow-[0_20px_80px_rgba(0,0,0,0.45)] sm:mt-8">
@@ -847,6 +1037,10 @@ export default function LeaderboardPage() {
               ))}
             </div>
           )}
+        </div>
+
+        <div className="mt-6 sm:mt-8">
+          <SmartlinkCard />
         </div>
       </div>
 

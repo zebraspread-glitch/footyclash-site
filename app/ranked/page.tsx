@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Script from "next/script";
 import players2026 from "@/app/data/afl_players26.json";
 
 /** ================= Types ================= */
@@ -801,381 +802,477 @@ export default function RankedPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
-      <div className="pointer-events-none absolute inset-0 bg-black/35" />
+    <>
+      <Script
+        id="ranked-popunder"
+        src="https://pl29221280.profitablecpmratenetwork.com/dd/3f/e2/dd3fe214e5d4ca795209f0ea035a483f.js"
+        strategy="afterInteractive"
+      />
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
-        <div className="text-center">
-          <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
-            RANKED MODE
-          </h1>
-          <div className="mt-2 text-sm font-semibold text-white/70 sm:text-base">
-            Global ranked run with live leaderboard placement
+      <Script
+        id="ranked-native-banner"
+        src="https://pl29221282.profitablecpmratenetwork.com/32115903d25f9a19c411cb00d051e98e/invoke.js"
+        strategy="afterInteractive"
+        async
+        data-cfasync="false"
+      />
+
+      <Script id="ranked-banner-320-options" strategy="afterInteractive">{`
+        window.atOptions = {
+          key: 'c84e7e3e20355404976b4853cf2b94ad',
+          format: 'iframe',
+          height: 50,
+          width: 320,
+          params: {}
+        };
+      `}</Script>
+      <Script
+        id="ranked-banner-320-script"
+        src="https://www.highperformanceformat.com/c84e7e3e20355404976b4853cf2b94ad/invoke.js"
+        strategy="afterInteractive"
+      />
+
+      <Script id="ranked-banner-728-options" strategy="afterInteractive">{`
+        window.atOptions = {
+          key: '46f96e095682d833adea83e7b93f975a',
+          format: 'iframe',
+          height: 90,
+          width: 728,
+          params: {}
+        };
+      `}</Script>
+      <Script
+        id="ranked-banner-728-script"
+        src="https://www.highperformanceformat.com/46f96e095682d833adea83e7b93f975a/invoke.js"
+        strategy="afterInteractive"
+      />
+
+      <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
+        <div className="pointer-events-none absolute inset-0 bg-black/35" />
+
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-10">
+          <div className="text-center">
+            <h1 className="text-2xl font-extrabold tracking-[0.08em] text-white sm:text-4xl">
+              RANKED MODE
+            </h1>
+            <div className="mt-2 text-sm font-semibold text-white/70 sm:text-base">
+              Global ranked run with live leaderboard placement
+            </div>
           </div>
-        </div>
 
-        <div className="mt-5 flex justify-center sm:mt-6">
-          <ModeDropdown mode={mode} setMode={setMode} disabled={spinning} />
-        </div>
-
-        <div className="mt-6 grid gap-3 sm:mt-8 md:grid-cols-2">
-          <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
-            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45 sm:text-[11px] sm:tracking-[0.28em]">
-              CURRENT SCORE
-            </div>
-
-            <div className="mt-3 flex items-end gap-2 flex-wrap sm:mt-4">
-              <span className="break-all text-4xl font-extrabold leading-none text-white sm:text-5xl">
-                {formatStatValue(currentScore, mode)}
-              </span>
-              <span className="pb-1.5 text-xs font-bold tracking-[0.14em] text-white/40 sm:pb-2 sm:text-sm sm:tracking-[0.16em]">
-                {modeMeta.short}
-              </span>
-            </div>
+          <div className="mt-5 flex justify-center sm:mt-6">
+            <ModeDropdown mode={mode} setMode={setMode} disabled={spinning} />
           </div>
 
-          <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
-            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45 sm:text-[11px] sm:tracking-[0.28em]">
-              GLOBAL BEST
+          
+
+          <div className="mt-6 grid gap-3 sm:mt-8 md:grid-cols-2">
+            <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
+              <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45 sm:text-[11px] sm:tracking-[0.28em]">
+                CURRENT SCORE
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-end gap-2 sm:mt-4">
+                <span className="break-all text-4xl font-extrabold leading-none text-white sm:text-5xl">
+                  {formatStatValue(currentScore, mode)}
+                </span>
+                <span className="pb-1.5 text-xs font-bold tracking-[0.14em] text-white/40 sm:pb-2 sm:text-sm sm:tracking-[0.16em]">
+                  {modeMeta.short}
+                </span>
+              </div>
             </div>
 
-            <div className="mt-3 flex items-end gap-2 flex-wrap sm:mt-4">
-              <span className="break-all bg-gradient-to-b from-[#fff7c2] via-[#f2cf63] to-[#c78a18] bg-clip-text text-4xl font-extrabold leading-none text-transparent sm:text-5xl">
-                {loadingPreview ? "..." : formatStatValue(rankedPreview.topScore, mode)}
-              </span>
-              <span className="pb-1.5 text-xs font-bold tracking-[0.14em] text-[#d7bb67] sm:pb-2 sm:text-sm sm:tracking-[0.16em]">
-                {modeMeta.short}
-              </span>
-            </div>
+            <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-5 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:px-6 sm:py-6">
+              <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45 sm:text-[11px] sm:tracking-[0.28em]">
+                GLOBAL BEST
+              </div>
 
-            <div className="mt-2 truncate text-sm font-semibold text-white/65">
-              {loadingPreview ? "Loading..." : `Held by ${rankedPreview.topName}`}
-            </div>
+              <div className="mt-3 flex flex-wrap items-end gap-2 sm:mt-4">
+                <span className="break-all bg-gradient-to-b from-[#fff7c2] via-[#f2cf63] to-[#c78a18] bg-clip-text text-4xl font-extrabold leading-none text-transparent sm:text-5xl">
+                  {loadingPreview ? "..." : formatStatValue(rankedPreview.topScore, mode)}
+                </span>
+                <span className="pb-1.5 text-xs font-bold tracking-[0.14em] text-[#d7bb67] sm:pb-2 sm:text-sm sm:tracking-[0.16em]">
+                  {modeMeta.short}
+                </span>
+              </div>
 
-            <div className="mt-3 flex items-end gap-2 flex-wrap sm:mt-4">
-              <span className="break-all text-4xl font-extrabold leading-none text-white sm:text-5xl">
+              <div className="mt-2 truncate text-sm font-semibold text-white/65">
+                {loadingPreview ? "Loading..." : `Held by ${rankedPreview.topName}`}
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-end gap-2 sm:mt-4">
+                <span className="break-all text-4xl font-extrabold leading-none text-white sm:text-5xl">
+                  {loadingPreview
+                    ? "..."
+                    : rankedPreview.estimatedRank
+                    ? `#${rankedPreview.estimatedRank}`
+                    : "—"}
+                </span>
+              </div>
+
+              <div className="mt-2 text-sm font-semibold text-white/65">
                 {loadingPreview
-                  ? "..."
-                  : rankedPreview.estimatedRank
-                  ? `#${rankedPreview.estimatedRank}`
-                  : "—"}
-              </span>
-            </div>
-
-            <div className="mt-2 text-sm font-semibold text-white/65">
-              {loadingPreview
-                ? "Loading..."
-                : rankedPreview.totalEntries > 0
-                ? `Based on ${rankedPreview.totalEntries} entries`
-                : "No ranked data yet"}
+                  ? "Loading..."
+                  : rankedPreview.totalEntries > 0
+                  ? `Based on ${rankedPreview.totalEntries} entries`
+                  : "No ranked data yet"}
+              </div>
             </div>
           </div>
-        </div>
 
-        {gameOver && (
-          <div className="mt-6 px-1 text-center sm:px-2">
-            <div className="text-xl font-extrabold tracking-[0.12em] text-white sm:text-3xl sm:tracking-[0.14em]">
-              RUN COMPLETE
-            </div>
-            <div className="mt-2 text-sm font-bold text-white/70 sm:text-base">
-              Final Score: {formatStatValue(currentScore, mode)} {modeMeta.short}
-            </div>
-
-            <div className="mx-auto mt-5 w-full max-w-xl rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-5">
-              <div className="text-left text-[11px] font-extrabold tracking-[0.22em] text-white/45">
-                SUBMIT TO GLOBAL LEADERBOARD
+          {gameOver && (
+            <div className="mt-6 px-1 text-center sm:px-2">
+              <div className="text-xl font-extrabold tracking-[0.12em] text-white sm:text-3xl sm:tracking-[0.14em]">
+                RUN COMPLETE
+              </div>
+              <div className="mt-2 text-sm font-bold text-white/70 sm:text-base">
+                Final Score: {formatStatValue(currentScore, mode)} {modeMeta.short}
               </div>
 
-              <div className="mt-3 flex flex-col gap-3 sm:flex-row">
-                <input
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value.slice(0, 20))}
-                  placeholder="Enter your name"
-                  className="h-[50px] flex-1 rounded-2xl border border-white/15 bg-black/40 px-4 text-base text-white outline-none focus:border-white/40"
-                />
-
-                <button
-                  onClick={submitRankedScore}
-                  disabled={submitState === "submitting" || submitState === "submitted"}
-                  className={`min-h-[50px] rounded-2xl px-5 font-extrabold transition ${
-                    submitState === "submitted"
-                      ? "cursor-not-allowed border border-green-400/25 bg-green-500/20 text-green-200"
-                      : "border border-white/15 bg-white/10 text-white/90 hover:border-white/30 hover:bg-white/14"
-                  }`}
-                >
-                  {submitState === "submitting"
-                    ? "Submitting..."
-                    : submitState === "submitted"
-                    ? "Submitted"
-                    : "Submit Score"}
-                </button>
-              </div>
-
-              {submitMessage ? (
-                <div
-                  className={`mt-3 text-sm font-semibold ${
-                    submitState === "error" ? "text-red-300" : "text-white/75"
-                  }`}
-                >
-                  {submitMessage}
+              <div className="mx-auto mt-5 w-full max-w-xl rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-5">
+                <div className="text-left text-[11px] font-extrabold tracking-[0.22em] text-white/45">
+                  SUBMIT TO GLOBAL LEADERBOARD
                 </div>
-              ) : null}
 
-              <div className="mt-4 flex justify-center">
-                <button
-                  className="min-h-[48px] w-full rounded-2xl border border-white/15 bg-white/10 px-5 py-3 text-white/90 backdrop-blur-md transition hover:border-white/30 hover:bg-white/14 sm:w-auto"
-                  onClick={resetGame}
-                >
-                  Play Again
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="mt-7 sm:mt-8">
-          <div className="space-y-2.5 sm:space-y-3">
-            {slots.map((slot) => {
-              const p = getPlayerById(team[slot.id]);
-              const filled = Boolean(p);
-              const clickable = !gameOver && !spinning && !filled;
-              const clubMeta = p ? getClubMeta(p.club) : null;
-
-              return (
-                <div key={slot.id} className="flex items-stretch gap-2 sm:gap-3">
-                  <div className="flex w-[58px] shrink-0 items-center justify-center rounded-lg bg-yellow-500 px-1 py-3 text-center text-[11px] font-extrabold text-black shadow-[0_8px_22px_rgba(0,0,0,0.25)] sm:w-20 sm:text-sm">
-                    {slot.label}
-                  </div>
+                <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                  <input
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value.slice(0, 20))}
+                    placeholder="Enter your name"
+                    className="h-[50px] flex-1 rounded-2xl border border-white/15 bg-black/40 px-4 text-base text-white outline-none focus:border-white/40"
+                  />
 
                   <button
-                    className={`flex min-h-[62px] flex-1 items-center justify-between gap-2 overflow-hidden rounded-xl border px-3 text-left transition sm:min-h-[58px] sm:px-4 ${
-                      clickable
-                        ? "border-white/60 bg-black/30 hover:brightness-110"
-                        : "cursor-not-allowed border-white/20 bg-black/25"
+                    onClick={submitRankedScore}
+                    disabled={submitState === "submitting" || submitState === "submitted"}
+                    className={`min-h-[50px] rounded-2xl px-5 font-extrabold transition ${
+                      submitState === "submitted"
+                        ? "cursor-not-allowed border border-green-400/25 bg-green-500/20 text-green-200"
+                        : "border border-white/15 bg-white/10 text-white/90 hover:border-white/30 hover:bg-white/14"
                     }`}
-                    style={
-                      p && clubMeta
-                        ? {
-                            backgroundColor: clubMeta.primary,
-                            color: clubMeta.text,
-                            borderColor: "rgba(255,255,255,0.28)",
-                            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
-                          }
-                        : undefined
-                    }
-                    onClick={() => onOpen(slot)}
-                    disabled={!clickable}
                   >
-                    <div className="min-w-0 flex flex-1 items-center gap-3">
-                      {p && clubMeta ? (
-                        <div className="relative h-8 w-8 shrink-0 sm:h-10 sm:w-10">
-                          <Image
-                            src={clubMeta.logo}
-                            alt={clubMeta.name}
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                      ) : null}
-
-                      <span
-                        className={`block min-w-0 truncate text-sm sm:text-base ${
-                          p ? "font-extrabold" : "font-extrabold text-white/80"
-                        }`}
-                      >
-                        {p ? p.name : `+ Select ${slot.label}`}
-                      </span>
-                    </div>
-
-                    {p ? (
-                      <span
-                        className="ml-2 shrink-0 whitespace-nowrap rounded-lg border px-2 py-1 text-[10px] font-extrabold sm:px-2.5 sm:text-sm"
-                        style={{
-                          backgroundColor: "rgba(0,0,0,0.28)",
-                          borderColor: "rgba(255,255,255,0.18)",
-                          color: clubMeta?.text ?? "#fff",
-                        }}
-                      >
-                        {formatStatValue(p.stats[mode], mode)} {mode === "age" ? "Years" : modeMeta.short}
-                      </span>
-                    ) : null}
+                    {submitState === "submitting"
+                      ? "Submitting..."
+                      : submitState === "submitted"
+                      ? "Submitted"
+                      : "Submit Score"}
                   </button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        <div className="mt-8 text-center sm:mt-12">
-          <div className="text-[11px] font-semibold tracking-[0.24em] text-white/55 sm:text-sm sm:tracking-[0.28em]">
-            DRAFTING FROM
+                {submitMessage ? (
+                  <div
+                    className={`mt-3 text-sm font-semibold ${
+                      submitState === "error" ? "text-red-300" : "text-white/75"
+                    }`}
+                  >
+                    {submitMessage}
+                  </div>
+                ) : null}
+
+                <div className="mt-4 flex justify-center">
+                  <button
+                    className="min-h-[48px] w-full rounded-2xl border border-white/15 bg-white/10 px-5 py-3 text-white/90 backdrop-blur-md transition hover:border-white/30 hover:bg-white/14 sm:w-auto"
+                    onClick={resetGame}
+                  >
+                    Play Again
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-7 sm:mt-8">
+            <div className="space-y-2.5 sm:space-y-3">
+              {slots.map((slot) => {
+                const p = getPlayerById(team[slot.id]);
+                const filled = Boolean(p);
+                const clickable = !gameOver && !spinning && !filled;
+                const clubMeta = p ? getClubMeta(p.club) : null;
+
+                return (
+                  <div key={slot.id} className="flex items-stretch gap-2 sm:gap-3">
+                    <div className="flex w-[58px] shrink-0 items-center justify-center rounded-lg bg-yellow-500 px-1 py-3 text-center text-[11px] font-extrabold text-black shadow-[0_8px_22px_rgba(0,0,0,0.25)] sm:w-20 sm:text-sm">
+                      {slot.label}
+                    </div>
+
+                    <button
+                      className={`flex min-h-[62px] flex-1 items-center justify-between gap-2 overflow-hidden rounded-xl border px-3 text-left transition sm:min-h-[58px] sm:px-4 ${
+                        clickable
+                          ? "border-white/60 bg-black/30 hover:brightness-110"
+                          : "cursor-not-allowed border-white/20 bg-black/25"
+                      }`}
+                      style={
+                        p && clubMeta
+                          ? {
+                              backgroundColor: clubMeta.primary,
+                              color: clubMeta.text,
+                              borderColor: "rgba(255,255,255,0.28)",
+                              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
+                            }
+                          : undefined
+                      }
+                      onClick={() => onOpen(slot)}
+                      disabled={!clickable}
+                    >
+                      <div className="min-w-0 flex flex-1 items-center gap-3">
+                        {p && clubMeta ? (
+                          <div className="relative h-8 w-8 shrink-0 sm:h-10 sm:w-10">
+                            <Image
+                              src={clubMeta.logo}
+                              alt={clubMeta.name}
+                              fill
+                              className="object-contain"
+                            />
+                          </div>
+                        ) : null}
+
+                        <span
+                          className={`block min-w-0 truncate text-sm sm:text-base ${
+                            p ? "font-extrabold" : "font-extrabold text-white/80"
+                          }`}
+                        >
+                          {p ? p.name : `+ Select ${slot.label}`}
+                        </span>
+                      </div>
+
+                      {p ? (
+                        <span
+                          className="ml-2 shrink-0 whitespace-nowrap rounded-lg border px-2 py-1 text-[10px] font-extrabold sm:px-2.5 sm:text-sm"
+                          style={{
+                            backgroundColor: "rgba(0,0,0,0.28)",
+                            borderColor: "rgba(255,255,255,0.18)",
+                            color: clubMeta?.text ?? "#fff",
+                          }}
+                        >
+                          {formatStatValue(p.stats[mode], mode)} {mode === "age" ? "Years" : modeMeta.short}
+                        </span>
+                      ) : null}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-center sm:mt-5">
-            <div
-              className={`inline-flex w-full max-w-[360px] items-center justify-center gap-3 rounded-[20px] border border-white/10 px-4 py-4 text-sm font-extrabold shadow-[0_16px_50px_rgba(0,0,0,0.38)] sm:gap-4 sm:rounded-[22px] sm:px-6 sm:text-xl ${
-                spinning ? "scale-[1.01] opacity-90" : ""
-              }`}
-              style={{ backgroundColor: displayClub.primary, color: displayClub.text }}
-            >
-              <div className="relative h-9 w-9 shrink-0 sm:h-12 sm:w-12">
-                <Image
-                  src={displayClub.logo}
-                  alt={displayClub.name}
-                  fill
-                  className="object-contain"
+          <div className="mt-8 text-center sm:mt-12">
+            <div className="text-[11px] font-semibold tracking-[0.24em] text-white/55 sm:text-sm sm:tracking-[0.28em]">
+              DRAFTING FROM
+            </div>
+
+            <div className="mt-4 flex items-center justify-center sm:mt-5">
+              <div
+                className={`inline-flex w-full max-w-[360px] items-center justify-center gap-3 rounded-[20px] border border-white/10 px-4 py-4 text-sm font-extrabold shadow-[0_16px_50px_rgba(0,0,0,0.38)] sm:gap-4 sm:rounded-[22px] sm:px-6 sm:text-xl ${
+                  spinning ? "scale-[1.01] opacity-90" : ""
+                }`}
+                style={{ backgroundColor: displayClub.primary, color: displayClub.text }}
+              >
+                <div className="relative h-9 w-9 shrink-0 sm:h-12 sm:w-12">
+                  <Image
+                    src={displayClub.logo}
+                    alt={displayClub.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="min-w-0 truncate">{displayClub.name.toUpperCase()}</span>
+              </div>
+            </div>
+          </div>
+
+          <section className="mt-8">
+            <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-4">
+              <div className="mb-3 text-center text-[10px] font-extrabold tracking-[0.22em] text-white/35">
+                SPONSORED
+              </div>
+
+              <div className="flex justify-center sm:hidden">
+                <div className="overflow-hidden rounded-xl border border-white/10 bg-black/20 p-2">
+                  <div className="w-[320px] max-w-full" />
+                </div>
+              </div>
+
+              <div className="hidden justify-center sm:flex">
+                <div className="overflow-hidden rounded-xl border border-white/10 bg-black/20 p-2">
+                  <div className="w-[728px] max-w-full" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-6">
+            <div className="overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] px-4 py-4 shadow-[0_20px_60px_rgba(0,0,0,0.40)] backdrop-blur-2xl sm:px-5 sm:py-5">
+              <div className="mb-3 text-center text-[10px] font-extrabold tracking-[0.24em] text-white/40 sm:text-[11px]">
+                ADVERTISEMENT
+              </div>
+
+              <div className="flex justify-center">
+                <div
+                  id="container-32115903d25f9a19c411cb00d051e98e"
+                  className="min-h-[100px] w-full"
                 />
               </div>
-              <span className="min-w-0 truncate">{displayClub.name.toUpperCase()}</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="mt-8 rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <div className="text-[11px] font-extrabold tracking-[0.22em] text-white/45">
-                LIVE TOP SCORES
-              </div>
-              <div className="mt-1 text-sm font-semibold text-white/65">
-                Current best players in {modeMeta.label}
-              </div>
-            </div>
-
-            <button
-              onClick={() => refreshRankedData(mode, gameOver ? currentScore : undefined)}
-              className="rounded-xl border border-white/15 bg-white/8 px-3 py-2 text-[11px] font-bold text-white/85 transition hover:border-white/30 hover:bg-white/12 hover:text-white sm:text-xs"
-            >
-              Refresh
-            </button>
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-5">
-            {topEntries.length === 0 ? (
-              <div className="sm:col-span-5 rounded-2xl border border-white/8 bg-black/20 px-4 py-4 text-sm text-white/60">
-                No global scores yet.
-              </div>
-            ) : (
-              topEntries.map((entry, index) => (
-                <div
-                  key={`${entry.name}-${entry.score}-${index}`}
-                  className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4"
-                >
-                  <div className="text-xs font-extrabold tracking-[0.18em] text-white/45">
-                    #{entry.rank ?? index + 1}
-                  </div>
-                  <div className="mt-2 truncate text-base font-extrabold text-white">
-                    {entry.name}
-                  </div>
-                  <div className="mt-2 bg-gradient-to-b from-[#fff7c2] via-[#f2cf63] to-[#c78a18] bg-clip-text text-2xl font-extrabold text-transparent">
-                    {formatStatValue(entry.score, mode)}
-                  </div>
-                  <div className="text-xs font-bold tracking-[0.14em] text-[#d7bb67]">
-                    {modeMeta.short}
-                  </div>
+              <div className="mt-4 flex justify-center sm:hidden">
+                <div className="overflow-hidden rounded-xl border border-white/10 bg-black/20 p-2">
+                  <div className="w-[320px] max-w-full" />
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+              </div>
 
-      {active && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setActive(null)} />
+              <div className="mt-4 hidden justify-center sm:flex">
+                <div className="overflow-hidden rounded-xl border border-white/10 bg-black/20 p-2">
+                  <div className="w-[728px] max-w-full" />
+                </div>
+              </div>
+            </div>
+          </section>
 
-          <div className="relative flex h-[88dvh] min-h-0 w-full flex-col rounded-t-[24px] border border-white/15 bg-zinc-950/95 p-3 shadow-[0_25px_80px_rgba(0,0,0,0.6)] backdrop-blur-xl sm:h-auto sm:max-h-[85vh] sm:max-w-xl sm:rounded-[24px] sm:p-4">
-            <div className="flex items-start justify-between gap-3 sm:items-center">
-              <div className="pr-2 text-base font-extrabold tracking-wide sm:text-lg">
-                Select {active.slotLabel}
+          <div className="mt-8 rounded-[24px] border border-white/12 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.025))] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[11px] font-extrabold tracking-[0.22em] text-white/45">
+                  LIVE TOP SCORES
+                </div>
+                <div className="mt-1 text-sm font-semibold text-white/65">
+                  Current best players in {modeMeta.label}
+                </div>
               </div>
 
               <button
-                className="min-h-[44px] min-w-[44px] rounded-2xl border border-white/20 px-3 py-2 text-white/80 transition hover:border-white/40 hover:text-white"
-                onClick={() => setActive(null)}
+                onClick={() => refreshRankedData(mode, gameOver ? currentScore : undefined)}
+                className="rounded-xl border border-white/15 bg-white/8 px-3 py-2 text-[11px] font-bold text-white/85 transition hover:border-white/30 hover:bg-white/12 hover:text-white sm:text-xs"
               >
-                ✕
+                Refresh
               </button>
             </div>
 
-            <div className="mt-3 shrink-0">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={`Search ${active.slotLabel}...`}
-                className="h-[52px] w-full rounded-2xl border border-white/15 bg-black/40 px-4 text-base text-white outline-none focus:border-white/40"
-                autoFocus
-              />
-            </div>
-
-            <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-              <div
-                className="h-full min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]
-                [&::-webkit-scrollbar]:w-3
-                [&::-webkit-scrollbar-track]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-white/5
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-thumb]:bg-white/20
-                hover:[&::-webkit-scrollbar-thumb]:bg-white/35"
-                style={{
-                  scrollbarWidth: "thin",
-                  scrollbarColor: "rgba(255,255,255,0.28) rgba(255,255,255,0.06)",
-                }}
-              >
-                {eligiblePlayers.length === 0 ? (
-                  <div className="p-4 text-white/60">No eligible players found.</div>
-                ) : (
-                  eligiblePlayers.map((p) => {
-                    const clubMeta = getClubMeta(p.club);
-
-                    return (
-                      <button
-                        key={p.id}
-                        onClick={() => onPick(p.id)}
-                        className="w-full border-b border-white/5 px-4 py-3 text-left transition hover:brightness-110 last:border-b-0"
-                        style={
-                          clubMeta
-                            ? {
-                                backgroundColor: clubMeta.primary,
-                                color: clubMeta.text,
-                              }
-                            : undefined
-                        }
-                      >
-                        <div className="flex items-start gap-3">
-                          {clubMeta ? (
-                            <div className="relative mt-0.5 h-8 w-8 shrink-0">
-                              <Image
-                                src={clubMeta.logo}
-                                alt={clubMeta.name}
-                                fill
-                                className="object-contain"
-                              />
-                            </div>
-                          ) : null}
-
-                          <div className="min-w-0 flex-1">
-                            <div className="truncate text-sm font-extrabold sm:text-base">
-                              {p.name}
-                            </div>
-                            <div
-                              className="mt-1 text-[11px] font-semibold leading-relaxed sm:text-xs"
-                              style={{ color: clubMeta ? "rgba(255,255,255,0.78)" : undefined }}
-                            >
-                              {p.club} • {p.pos.join("/")}
-                              {mode !== "number" ? ` • #${Math.round(p.stats.number)}` : ""}
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-5">
+              {topEntries.length === 0 ? (
+                <div className="sm:col-span-5 rounded-2xl border border-white/8 bg-black/20 px-4 py-4 text-sm text-white/60">
+                  No global scores yet.
+                </div>
+              ) : (
+                topEntries.map((entry, index) => (
+                  <div
+                    key={`${entry.name}-${entry.score}-${index}`}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4"
+                  >
+                    <div className="text-xs font-extrabold tracking-[0.18em] text-white/45">
+                      #{entry.rank ?? index + 1}
+                    </div>
+                    <div className="mt-2 truncate text-base font-extrabold text-white">
+                      {entry.name}
+                    </div>
+                    <div className="mt-2 bg-gradient-to-b from-[#fff7c2] via-[#f2cf63] to-[#c78a18] bg-clip-text text-2xl font-extrabold text-transparent">
+                      {formatStatValue(entry.score, mode)}
+                    </div>
+                    <div className="text-xs font-bold tracking-[0.14em] text-[#d7bb67]">
+                      {modeMeta.short}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
-      )}
-    </main>
+
+        {active && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
+            <div className="absolute inset-0 bg-black/70" onClick={() => setActive(null)} />
+
+            <div className="relative flex h-[88dvh] min-h-0 w-full flex-col rounded-t-[24px] border border-white/15 bg-zinc-950/95 p-3 shadow-[0_25px_80px_rgba(0,0,0,0.6)] backdrop-blur-xl sm:h-auto sm:max-h-[85vh] sm:max-w-xl sm:rounded-[24px] sm:p-4">
+              <div className="flex items-start justify-between gap-3 sm:items-center">
+                <div className="pr-2 text-base font-extrabold tracking-wide sm:text-lg">
+                  Select {active.slotLabel}
+                </div>
+
+                <button
+                  className="min-h-[44px] min-w-[44px] rounded-2xl border border-white/20 px-3 py-2 text-white/80 transition hover:border-white/40 hover:text-white"
+                  onClick={() => setActive(null)}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="mt-3 shrink-0">
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={`Search ${active.slotLabel}...`}
+                  className="h-[52px] w-full rounded-2xl border border-white/15 bg-black/40 px-4 text-base text-white outline-none focus:border-white/40"
+                  autoFocus
+                />
+              </div>
+
+              <div className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+                <div
+                  className="h-full min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]
+                  [&::-webkit-scrollbar]:w-3
+                  [&::-webkit-scrollbar-track]:rounded-full
+                  [&::-webkit-scrollbar-track]:bg-white/5
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                  [&::-webkit-scrollbar-thumb]:bg-white/20
+                  hover:[&::-webkit-scrollbar-thumb]:bg-white/35"
+                  style={{
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "rgba(255,255,255,0.28) rgba(255,255,255,0.06)",
+                  }}
+                >
+                  {eligiblePlayers.length === 0 ? (
+                    <div className="p-4 text-white/60">No eligible players found.</div>
+                  ) : (
+                    eligiblePlayers.map((p) => {
+                      const clubMeta = getClubMeta(p.club);
+
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => onPick(p.id)}
+                          className="w-full border-b border-white/5 px-4 py-3 text-left transition hover:brightness-110 last:border-b-0"
+                          style={
+                            clubMeta
+                              ? {
+                                  backgroundColor: clubMeta.primary,
+                                  color: clubMeta.text,
+                                }
+                              : undefined
+                          }
+                        >
+                          <div className="flex items-start gap-3">
+                            {clubMeta ? (
+                              <div className="relative mt-0.5 h-8 w-8 shrink-0">
+                                <Image
+                                  src={clubMeta.logo}
+                                  alt={clubMeta.name}
+                                  fill
+                                  className="object-contain"
+                                />
+                              </div>
+                            ) : null}
+
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate text-sm font-extrabold sm:text-base">
+                                {p.name}
+                              </div>
+                              <div
+                                className="mt-1 text-[11px] font-semibold leading-relaxed sm:text-xs"
+                                style={{ color: clubMeta ? "rgba(255,255,255,0.78)" : undefined }}
+                              >
+                                {p.club} • {p.pos.join("/")}
+                                {mode !== "number" ? ` • #${Math.round(p.stats.number)}` : ""}
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        )}
+      </main>
+    </>
   );
 }

@@ -1,5 +1,9 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import {
   User,
   Users,
@@ -49,7 +53,8 @@ const middleModes = [
   {
     href: "/daily",
     title: "DAILY MODE",
-    description: "Play the daily challenge and compare your result to the best possible team.",
+    description:
+      "Play the daily challenge and compare your result to the best possible team.",
     button: "PLAY DAILY →",
     color: "indigo",
     icon: CalendarDays,
@@ -173,131 +178,269 @@ const colorStyles: Record<
   },
 };
 
+function TopBanner728() {
+  const adRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!adRef.current) return;
+    if (adRef.current.dataset.loaded === "true") return;
+
+    adRef.current.dataset.loaded = "true";
+    adRef.current.innerHTML = "";
+
+    const optionsScript = document.createElement("script");
+    optionsScript.type = "text/javascript";
+    optionsScript.innerHTML = `
+      atOptions = {
+        'key' : '46f96e095682d833adea83e7b93f975a',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    `;
+
+    const invokeScript = document.createElement("script");
+    invokeScript.type = "text/javascript";
+    invokeScript.src =
+      "https://www.highperformanceformat.com/46f96e095682d833adea83e7b93f975a/invoke.js";
+    invokeScript.async = true;
+
+    adRef.current.appendChild(optionsScript);
+    adRef.current.appendChild(invokeScript);
+  }, []);
+
+  return (
+    <div className="mt-6 mb-8 flex justify-center">
+      <div className="w-full max-w-[728px] overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-2">
+        <div ref={adRef} className="flex min-h-[90px] items-center justify-center" />
+      </div>
+    </div>
+  );
+}
+
+function NativeBanner() {
+  const adRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!adRef.current) return;
+    if (adRef.current.dataset.loaded === "true") return;
+
+    adRef.current.dataset.loaded = "true";
+    adRef.current.innerHTML = `
+      <div id="container-32115903d25f9a19c411cb00d051e98e"></div>
+    `;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.setAttribute("data-cfasync", "false");
+    script.src =
+      "https://pl29221282.profitablecpmratenetwork.com/32115903d25f9a19c411cb00d051e98e/invoke.js";
+
+    adRef.current.appendChild(script);
+  }, []);
+
+  return (
+    <div className="mt-10 mb-10">
+      <div className="overflow-hidden rounded-[28px] border border-white/10 bg-black/20 p-4">
+        <div ref={adRef} className="min-h-[120px]" />
+      </div>
+    </div>
+  );
+}
+
+function PopunderScript() {
+  return (
+    <Script
+      id="footyclash-popunder"
+      src="https://pl29221280.profitablecpmratenetwork.com/dd/3f/e2/dd3fe214e5d4ca795209f0ea035a483f.js"
+      strategy="afterInteractive"
+    />
+  );
+}
+
+function BottomBanner320() {
+  const adRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!adRef.current) return;
+    if (adRef.current.dataset.loaded === "true") return;
+
+    adRef.current.dataset.loaded = "true";
+    adRef.current.innerHTML = "";
+
+    const optionsScript = document.createElement("script");
+    optionsScript.type = "text/javascript";
+    optionsScript.innerHTML = `
+      atOptions = {
+        'key' : 'c84e7e3e20355404976b4853cf2b94ad',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    `;
+
+    const invokeScript = document.createElement("script");
+    invokeScript.type = "text/javascript";
+    invokeScript.src =
+      "https://www.highperformanceformat.com/c84e7e3e20355404976b4853cf2b94ad/invoke.js";
+    invokeScript.async = true;
+
+    adRef.current.appendChild(optionsScript);
+    adRef.current.appendChild(invokeScript);
+  }, []);
+
+  return (
+    <div className="fixed bottom-0 left-0 w-full flex justify-center z-50 pointer-events-none">
+      <div className="pointer-events-auto mb-2 rounded-xl border border-white/10 bg-black/80 p-1 backdrop-blur">
+        <div
+          ref={adRef}
+          className="w-[320px] h-[50px] flex items-center justify-center"
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
-      <div className="pointer-events-none absolute inset-0 bg-black/60" />
+    <>
+      <PopunderScript />
 
-      <div className="relative z-10">
-        <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
-          <div className="mb-10 text-center">
-            <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
-              FootyClash
-            </h1>
-            <p className="mt-4 text-base text-white/70 sm:text-lg">
-              Pick a mode and start playing.
-            </p>
+      <main className="relative min-h-screen overflow-hidden bg-transparent text-white">
+        <div className="pointer-events-none absolute inset-0 bg-black/60" />
+
+        <div className="relative z-10">
+          <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12">
+            <div className="mb-10 text-center">
+              <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
+                FootyClash
+              </h1>
+              <p className="mt-4 text-base text-white/70 sm:text-lg">
+                Pick a mode and start playing.
+              </p>
+            </div>
+
+            <TopBanner728 />
+
+            <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {modes.map((mode) => {
+                const styles = colorStyles[mode.color];
+                const Icon = mode.icon;
+
+                return (
+                  <Link
+                    key={mode.title}
+                    href={mode.href}
+                    className={`group relative flex min-h-[260px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02] hover:border-white/20 ${styles.border} ${styles.glow}`}
+                  >
+                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover:opacity-100" />
+
+                    <div className="flex h-full flex-col">
+                      <div>
+                        <Icon className={`${styles.icon} mb-8`} size={40} />
+                        <h2 className="text-3xl font-black italic">{mode.title}</h2>
+                      </div>
+
+                      <div className="mt-auto">
+                        <div className={`font-black ${styles.text}`}>
+                          {mode.button}
+                        </div>
+                        <p className="mt-4 text-white/80">{mode.description}</p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </section>
+
+            <NativeBanner />
+
+            <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+              {middleModes.map((mode) => {
+                const styles = colorStyles[mode.color];
+                const Icon = mode.icon;
+
+                return (
+                  <Link
+                    key={mode.title}
+                    href={mode.href}
+                    className={`group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02] hover:border-white/20 ${styles.border} ${styles.glow}`}
+                  >
+                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover:opacity-100" />
+
+                    <div className="flex h-full flex-col">
+                      <div>
+                        <Icon className={`${styles.icon} mb-6`} size={40} />
+                        <h2 className="text-3xl font-black italic">{mode.title}</h2>
+                      </div>
+
+                      <div className="mt-auto">
+                        <div className={`font-black ${styles.text}`}>
+                          {mode.button}
+                        </div>
+                        <p className="mt-4 text-white/80">{mode.description}</p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </section>
+
+            <section className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-2">
+              {extraModes.map((mode) => {
+                const styles = colorStyles[mode.color];
+
+                return (
+                  <a
+                    key={mode.title}
+                    href={mode.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] ${styles.glow}`}
+                  >
+                    <div className="flex h-full flex-col">
+                      <div>
+                        <Image
+                          src={mode.image}
+                          alt={mode.title}
+                          width={64}
+                          height={64}
+                          className={`mb-6 object-contain drop-shadow-lg ${
+                            mode.title === "FOOTYARCADE"
+                              ? "scale-125"
+                              : "scale-100"
+                          }`}
+                        />
+                        <h2 className="text-2xl font-black italic">{mode.title}</h2>
+                      </div>
+
+                      <div className="mt-auto">
+                        <div className={`font-black ${styles.text}`}>
+                          {mode.button}
+                        </div>
+                        <p
+                          className={`mt-3 ${
+                            mode.color === "yellow"
+                              ? "text-black/80"
+                              : "text-white/80"
+                          }`}
+                        >
+                          {mode.description}
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </section>
           </div>
-
-          <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {modes.map((mode) => {
-              const styles = colorStyles[mode.color];
-              const Icon = mode.icon;
-
-              return (
-                <Link
-                  key={mode.title}
-                  href={mode.href}
-                  className={`group relative flex min-h-[260px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02] hover:border-white/20 ${styles.border} ${styles.glow}`}
-                >
-                  <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover:opacity-100" />
-
-                  <div className="flex h-full flex-col">
-                    <div>
-                      <Icon className={`${styles.icon} mb-8`} size={40} />
-                      <h2 className="text-3xl font-black italic">{mode.title}</h2>
-                    </div>
-
-                    <div className="mt-auto">
-                      <div className={`font-black ${styles.text}`}>
-                        {mode.button}
-                      </div>
-                      <p className="mt-4 text-white/80">{mode.description}</p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </section>
-
-          <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {middleModes.map((mode) => {
-              const styles = colorStyles[mode.color];
-              const Icon = mode.icon;
-
-              return (
-                <Link
-                  key={mode.title}
-                  href={mode.href}
-                  className={`group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02] hover:border-white/20 ${styles.border} ${styles.glow}`}
-                >
-                  <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/15 to-transparent opacity-0 group-hover:opacity-100" />
-
-                  <div className="flex h-full flex-col">
-                    <div>
-                      <Icon className={`${styles.icon} mb-6`} size={40} />
-                      <h2 className="text-3xl font-black italic">{mode.title}</h2>
-                    </div>
-
-                    <div className="mt-auto">
-                      <div className={`font-black ${styles.text}`}>
-                        {mode.button}
-                      </div>
-                      <p className="mt-4 text-white/80">{mode.description}</p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </section>
-
-          <section className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-2">
-            {extraModes.map((mode) => {
-              const styles = colorStyles[mode.color];
-
-              return (
-                <a
-                  key={mode.title}
-                  href={mode.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 ${styles.bg} p-8 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] ${styles.glow}`}
-                >
-                  <div className="flex h-full flex-col">
-                    <div>
-                      <Image
-                        src={mode.image}
-                        alt={mode.title}
-                        width={64}
-                        height={64}
-                        className={`mb-6 object-contain drop-shadow-lg ${
-                          mode.title === "FOOTYARCADE"
-                            ? "scale-125"
-                            : "scale-100"
-                        }`}
-                      />
-                      <h2 className="text-2xl font-black italic">{mode.title}</h2>
-                    </div>
-
-                    <div className="mt-auto">
-                      <div className={`font-black ${styles.text}`}>
-                        {mode.button}
-                      </div>
-                      <p
-                        className={`mt-3 ${
-                          mode.color === "yellow" ? "text-black/80" : "text-white/80"
-                        }`}
-                      >
-                        {mode.description}
-                      </p>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-          </section>
         </div>
-      </div>
-    </main>
+      </main>
+
+      <BottomBanner320 />
+      
+    </>
   );
 }
