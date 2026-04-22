@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import players from "@/app/data/afl_players26.json";
 
 type StatMode =
   | "age"
@@ -31,6 +31,11 @@ type LeaderboardEntry = {
   team?: Record<string, string | null> | null;
 };
 
+type PlayerRecord = {
+  id: string;
+  name: string;
+};
+
 const MODE_OPTIONS: ModeOption[] = [
   { key: "age", label: "Age", short: "AGE" },
   { key: "number", label: "Jumper Number", short: "#" },
@@ -45,6 +50,10 @@ const MODE_OPTIONS: ModeOption[] = [
   { key: "bounces", label: "Bounces", short: "BOUN" },
   { key: "metres_gained", label: "Metres Gained", short: "MG" },
 ];
+
+const playerNameMap: Record<string, string> = Object.fromEntries(
+  (players as PlayerRecord[]).map((player) => [player.id, player.name])
+);
 
 function getModeMeta(mode: StatMode) {
   return MODE_OPTIONS.find((option) => option.key === mode) ?? MODE_OPTIONS[0];
@@ -65,12 +74,6 @@ function formatStatValue(value: number, mode: StatMode) {
   return Number(value || 0).toFixed(1);
 }
 
-function formatSlotLabel(key: string) {
-  return key
-    .replace(/[_-]+/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
 function rankColor(rank: number) {
   if (rank === 1) return "text-[#ffbf2f]";
   if (rank === 2) return "text-white";
@@ -81,6 +84,52 @@ function rankColor(rank: number) {
 function scoreColor(rank: number) {
   if (rank <= 2) return "text-cyan-400";
   return "text-fuchsia-500";
+}
+
+function normalizeSlot(slot: string) {
+  const raw = slot.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  if (raw.includes("fwd") || raw.includes("for")) return "FWD";
+  if (raw.includes("mid")) return "MID";
+  if (raw.includes("def") || raw.includes("back")) return "DEF";
+  if (raw.includes("ruck")) return "RUCK";
+  if (raw.includes("flex") || raw.includes("bench") || raw.includes("util")) return "FLEX";
+
+  return slot.toUpperCase().replace(/[_-]+/g, " ");
+}
+
+function slotSortValue(slot: string) {
+  const key = normalizeSlot(slot);
+  if (key === "FWD") return 1;
+  if (key === "MID") return 2;
+  if (key === "DEF") return 3;
+  if (key === "RUCK") return 4;
+  if (key === "FLEX") return 5;
+  return 99;
+}
+
+function getPlayerRowStyle(index: number) {
+  const styles = [
+    "bg-[#0f2f67] border-[#3560ad] text-white",
+    "bg-[#179fd5] border-[#5bc5ef] text-black",
+    "bg-[#f75c1e] border-[#ff8d60] text-black",
+    "bg-[#0c3d78] border-[#2d69b5] text-white",
+    "bg-[#97004a] border-[#d84c87] text-[#ffe100]",
+    "bg-[#1352b8] border-[#4f85dd] text-white",
+    "bg-[#cf0000] border-[#ff5454] text-[#ffe100]",
+    "bg-[#133874] border-[#3c64ad] text-white",
+  ];
+
+  return styles[index % styles.length];
+}
+
+function getPlayerDisplayName(playerValue: string | null) {
+  if (!playerValue) return "";
+
+  const trimmed = String(playerValue).trim();
+  if (!trimmed) return "";
+
+  return playerNameMap[trimmed] || trimmed;
 }
 
 function ModeDropdown({
@@ -210,69 +259,85 @@ function TeamModal({
 
   if (!entry) return null;
 
-  const teamEntries = Object.entries(entry.team ?? {}).filter(
-    ([, value]) => value && String(value).trim() !== ""
-  );
+  const teamEntries = Object.entries(entry.team ?? {})
+    .filter(([, value]) => value && String(value).trim() !== "")
+    .sort((a, b) => {
+      const slotDiff = slotSortValue(a[0]) - slotSortValue(b[0]);
+      if (slotDiff !== 0) return slotDiff;
+      return a[0].localeCompare(b[0]);
+    });
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-3 py-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-3 py-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl overflow-hidden rounded-[24px] border border-white/12 bg-[#101317] shadow-[0_20px_80px_rgba(0,0,0,0.55)]"
+        className="w-full max-w-5xl rounded-[28px] border border-white/10 bg-[#07111c] p-3 shadow-[0_30px_100px_rgba(0,0,0,0.7)] sm:p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#253047] px-4 py-4 sm:px-6">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-[10px] font-extrabold tracking-[0.24em] text-white/45">
+            <div className="text-[11px] font-extrabold tracking-[0.24em] text-white/50">
               VIEW TEAM
             </div>
-            <div className="mt-2 truncate text-xl font-extrabold text-white sm:text-2xl">
+            <div className="mt-2 truncate text-2xl font-extrabold text-white sm:text-3xl">
               {entry.name}
             </div>
-            <div className="mt-1 text-sm font-semibold text-white/65">
-              Score: {formatStatValue(entry.score, mode)}
+            <div className="mt-2 text-sm font-bold text-white/70 sm:text-base">
+              Exact team for score:{" "}
+              <span className="text-[#ffd25f]">
+                {formatStatValue(entry.score, mode)} {getModeMeta(mode).short}
+              </span>
             </div>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded-xl border border-white/12 bg-white/5 px-3 py-2 text-sm font-extrabold text-white/80 transition hover:bg-white/10 hover:text-white"
+            className="rounded-2xl border border-white/12 bg-white/5 px-4 py-2 text-sm font-extrabold tracking-[0.12em] text-white/85 transition hover:bg-white/10 hover:text-white"
           >
             CLOSE
           </button>
         </div>
 
-        <div className="max-h-[70vh] overflow-y-auto px-4 py-4 sm:px-6">
-          {teamEntries.length === 0 ? (
-            <div className="py-8 text-center">
-              <div className="text-lg font-extrabold text-white">
-                No saved team found
-              </div>
-              <div className="mt-2 text-sm font-semibold text-white/60">
-                This entry does not have team data attached.
-              </div>
+        {teamEntries.length === 0 ? (
+          <div className="rounded-[24px] border border-white/10 bg-[#0d1724] px-6 py-12 text-center">
+            <div className="text-xl font-extrabold text-white">
+              No saved team found
             </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {teamEntries.map(([slot, player]) => (
+            <div className="mt-2 text-sm font-semibold text-white/60">
+              This entry does not have team data attached.
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {teamEntries.map(([slot, player], index) => {
+              const slotLabel = normalizeSlot(slot);
+              const rowStyle = getPlayerRowStyle(index);
+              const displayName = getPlayerDisplayName(player);
+
+              return (
                 <div
                   key={slot}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                  className="grid grid-cols-[82px_minmax(0,1fr)] items-stretch gap-3 sm:grid-cols-[94px_minmax(0,1fr)]"
                 >
-                  <div className="text-[10px] font-extrabold tracking-[0.18em] text-white/40">
-                    {formatSlotLabel(slot)}
+                  <div className="flex min-h-[58px] items-center justify-center rounded-2xl bg-[#efbe00] px-2 text-center text-lg font-black tracking-[0.04em] text-black shadow-[inset_0_-4px_0_rgba(0,0,0,0.18)] sm:min-h-[62px]">
+                    {slotLabel}
                   </div>
-                  <div className="mt-2 text-base font-extrabold text-white">
-                    {player}
+
+                  <div
+                    className={`flex min-h-[58px] items-center rounded-2xl border px-4 shadow-[0_8px_24px_rgba(0,0,0,0.22)] sm:min-h-[62px] sm:px-6 ${rowStyle}`}
+                  >
+                    <div className="min-w-0 text-lg font-extrabold sm:text-[1.65rem]">
+                      <div className="truncate">{displayName}</div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
