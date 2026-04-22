@@ -63,6 +63,13 @@ type ClubTheme = {
   pill: string;
 };
 
+type LeaderboardResponse = {
+  topScore?: number;
+  topName?: string;
+  totalEntries?: number;
+  entries?: LeaderboardEntry[];
+};
+
 const MODE_OPTIONS: ModeOption[] = [
   { key: "age", label: "Age", short: "AGE" },
   { key: "number", label: "Jumper Number", short: "#" },
@@ -303,10 +310,14 @@ function ModeDropdown({
   mode,
   setMode,
   disabled,
+  sortedModes,
+  modeCounts,
 }: {
   mode: StatMode;
   setMode: (mode: StatMode) => void;
   disabled: boolean;
+  sortedModes: ModeOption[];
+  modeCounts: Partial<Record<StatMode, number>>;
 }) {
   const [open, setOpen] = useState(false);
   const current = getModeMeta(mode);
@@ -368,8 +379,9 @@ function ModeDropdown({
         }`}
       >
         <div className="max-h-[420px] overflow-y-auto p-2">
-          {MODE_OPTIONS.map((option) => {
+          {sortedModes.map((option) => {
             const active = option.key === mode;
+            const count = modeCounts[option.key] ?? 0;
 
             return (
               <button
@@ -382,7 +394,17 @@ function ModeDropdown({
                     : "text-white/90 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <span className="font-bold">{option.label}</span>
+                <div className="min-w-0">
+                  <div className="truncate font-bold">{option.label}</div>
+                  <div
+                    className={`mt-0.5 text-[11px] font-extrabold tracking-[0.14em] ${
+                      active ? "text-black/55" : "text-white/45"
+                    }`}
+                  >
+                    {count} ENTRIES
+                  </div>
+                </div>
+
                 <span
                   className={`ml-3 text-xs font-extrabold tracking-[0.18em] ${
                     active ? "text-black/70" : "text-white/45"
@@ -589,6 +611,7 @@ export default function LeaderboardPage() {
   const [topScore, setTopScore] = useState(0);
   const [topName, setTopName] = useState("—");
   const [totalEntries, setTotalEntries] = useState(0);
+  const [modeCounts, setModeCounts] = useState<Partial<Record<StatMode, number>>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null);
@@ -596,31 +619,76 @@ export default function LeaderboardPage() {
   const modeMeta = useMemo(() => getModeMeta(mode), [mode]);
   const rangeMeta = useMemo(() => getRangeMeta(range), [range]);
 
+  const sortedModes = useMemo(() => {
+    return [...MODE_OPTIONS].sort((a, b) => {
+      const countA = modeCounts[a.key] ?? 0;
+      const countB = modeCounts[b.key] ?? 0;
+
+      if (countB !== countA) return countB - countA;
+
+      const selectedBoostA = a.key === mode ? 1 : 0;
+      const selectedBoostB = b.key === mode ? 1 : 0;
+      if (selectedBoostB !== selectedBoostA) return selectedBoostB - selectedBoostA;
+
+      return a.label.localeCompare(b.label);
+    });
+  }, [modeCounts, mode]);
+
+  async function fetchLeaderboard(modeToLoad: StatMode, rangeToLoad: LeaderboardRange) {
+    const res = await fetch(
+      `/api/ranked/top?mode=${encodeURIComponent(modeToLoad)}&period=${encodeURIComponent(rangeToLoad)}`,
+      { cache: "no-store" }
+    );
+
+    const data: LeaderboardResponse & { error?: string } = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.error || "Failed to load leaderboard.");
+    }
+
+    return data;
+  }
+
   async function loadLeaderboard(selectedMode: StatMode, selectedRange: LeaderboardRange) {
     try {
       setLoading(true);
       setError("");
 
-      const res = await fetch(
-        `/api/ranked/top?mode=${encodeURIComponent(selectedMode)}&period=${encodeURIComponent(selectedRange)}`,
-        { cache: "no-store" }
-      );
+      const [selectedData, ...otherModeData] = await Promise.all([
+        fetchLeaderboard(selectedMode, selectedRange),
+        ...MODE_OPTIONS.filter((option) => option.key !== selectedMode).map((option) =>
+          fetchLeaderboard(option.key, selectedRange)
+            .then((data) => ({
+              mode: option.key,
+              totalEntries: Number(data?.totalEntries ?? 0) || 0,
+            }))
+            .catch(() => ({
+              mode: option.key,
+              totalEntries: 0,
+            }))
+        ),
+      ]);
 
-      const data = await res.json();
+      setEntries(Array.isArray(selectedData?.entries) ? selectedData.entries : []);
+      setTopScore(Number(selectedData?.topScore ?? 0) || 0);
+      setTopName(typeof selectedData?.topName === "string" ? selectedData.topName : "—");
+      setTotalEntries(Number(selectedData?.totalEntries ?? 0) || 0);
 
-      if (!res.ok) {
-        throw new Error(data?.error || "Failed to load leaderboard.");
+      const nextCounts: Partial<Record<StatMode, number>> = {
+        [selectedMode]: Number(selectedData?.totalEntries ?? 0) || 0,
+      };
+
+      for (const item of otherModeData) {
+        nextCounts[item.mode] = item.totalEntries;
       }
 
-      setEntries(Array.isArray(data?.entries) ? data.entries : []);
-      setTopScore(Number(data?.topScore ?? 0) || 0);
-      setTopName(typeof data?.topName === "string" ? data.topName : "—");
-      setTotalEntries(Number(data?.totalEntries ?? 0) || 0);
+      setModeCounts(nextCounts);
     } catch (err) {
       setEntries([]);
       setTopScore(0);
       setTopName("—");
       setTotalEntries(0);
+      setModeCounts({});
       setError(err instanceof Error ? err.message : "Failed to load leaderboard.");
     } finally {
       setLoading(false);
@@ -676,7 +744,13 @@ export default function LeaderboardPage() {
         </div>
 
         <div className="mt-5 flex justify-center sm:mt-6">
-          <ModeDropdown mode={mode} setMode={setMode} disabled={loading} />
+          <ModeDropdown
+            mode={mode}
+            setMode={setMode}
+            disabled={loading}
+            sortedModes={sortedModes}
+            modeCounts={modeCounts}
+          />
         </div>
 
         <div className="mt-6 grid gap-3 sm:mt-8 md:grid-cols-3">
