@@ -57,6 +57,27 @@ function getParlayStatus(legs: BetLeg[]): LegStatus {
   return "pending";
 }
 
+function getStatusRank(status: LegStatus) {
+  if (status === "hit") return 0;
+  if (status === "void") return 1;
+  if (status === "miss") return 2;
+  return 3;
+}
+
+function sortEntries(entries: FndEntry[]) {
+  return [...entries].sort((a, b) => {
+    const statusA = getParlayStatus(a.legs_json);
+    const statusB = getParlayStatus(b.legs_json);
+
+    const rankA = getStatusRank(statusA);
+    const rankB = getStatusRank(statusB);
+
+    if (rankA !== rankB) return rankA - rankB;
+
+    return Number(b.total_odds) - Number(a.total_odds);
+  });
+}
+
 function statusStyles(status?: LegStatus) {
   if (status === "hit") return "border-green-300 bg-green-100 text-green-700";
   if (status === "miss") return "border-red-300 bg-red-100 text-red-700";
@@ -206,6 +227,8 @@ export default function FndLeaderboardPage() {
     }
   }
 
+  const sortedEntries = sortEntries(entries);
+
   return (
     <main className="min-h-screen bg-[#eef3f7] text-[#0a2d4f]">
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
@@ -326,24 +349,39 @@ export default function FndLeaderboardPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {entries.map((entry) => {
+                {sortedEntries.map((entry, index) => {
                   const isOpen = openEntryId === entry.id;
                   const parlayStatus = getParlayStatus(entry.legs_json);
                   const legHitCount = getLegHitCount(entry.legs_json);
+                  const isWinner = index === 0 && parlayStatus === "hit";
 
                   return (
                     <div
                       key={entry.id}
-                      className="overflow-hidden rounded-[18px] border border-[#dce7f0] bg-[#f7fafc]"
+                      className={`overflow-hidden rounded-[18px] border ${
+                        isWinner
+                          ? "border-green-300 bg-green-50 shadow-[0_10px_24px_rgba(34,197,94,0.12)]"
+                          : "border-[#dce7f0] bg-[#f7fafc]"
+                      }`}
                     >
                       <button
                         type="button"
                         onClick={() => toggleEntry(entry.id)}
-                        className="flex w-full items-center justify-between gap-4 p-4 text-left transition hover:bg-[#edf4f9]"
+                        className={`flex w-full items-center justify-between gap-4 p-4 text-left transition ${
+                          isWinner ? "hover:bg-green-100" : "hover:bg-[#edf4f9]"
+                        }`}
                       >
                         <div className="min-w-0">
-                          <div className="truncate text-xl font-black text-[#0a2d4f]">
-                            {entry.user_name}
+                          <div className="flex flex-wrap items-center gap-2">
+                            {isWinner ? (
+                              <div className="rounded-full bg-green-600 px-3 py-1 text-[10px] font-black tracking-[0.14em] text-white">
+                                WINNER
+                              </div>
+                            ) : null}
+
+                            <div className="truncate text-xl font-black text-[#0a2d4f]">
+                              {entry.user_name}
+                            </div>
                           </div>
 
                           <div
