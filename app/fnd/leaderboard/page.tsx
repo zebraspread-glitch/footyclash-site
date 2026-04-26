@@ -50,14 +50,9 @@ function getLegHitCount(legs: BetLeg[]) {
 function getParlayStatus(legs: BetLeg[]): LegStatus {
   if (!Array.isArray(legs) || legs.length === 0) return "pending";
 
-  const hasVoid = legs.some((leg) => leg.status === "void");
-  if (hasVoid) return "void";
-
-  const hasMiss = legs.some((leg) => leg.status === "miss");
-  if (hasMiss) return "miss";
-
-  const allHit = legs.every((leg) => leg.status === "hit");
-  if (allHit) return "hit";
+  if (legs.some((leg) => leg.status === "void")) return "void";
+  if (legs.some((leg) => leg.status === "miss")) return "miss";
+  if (legs.every((leg) => leg.status === "hit")) return "hit";
 
   return "pending";
 }
@@ -86,8 +81,10 @@ function parlayText(status: LegStatus, hitCount: string) {
 export default function FndLeaderboardPage() {
   const [entries, setEntries] = useState<FndEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [savingLeg, setSavingLeg] = useState<string | null>(null);
+  const [savingResults, setSavingResults] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [openEntryId, setOpenEntryId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -112,12 +109,15 @@ export default function FndLeaderboardPage() {
   function lockAdmin() {
     localStorage.removeItem("fnd-admin-unlocked");
     setIsAdmin(false);
+    setHasUnsavedChanges(false);
+    loadEntries();
   }
 
   async function loadEntries() {
     try {
       setLoading(true);
       setError("");
+      setSuccess("");
 
       const { data, error } = await supabase
         .from("fnd-bets")
@@ -126,9 +126,7 @@ export default function FndLeaderboardPage() {
         .order("total_odds", { ascending: false })
         .order("created_at", { ascending: true });
 
-      if (error) {
-        throw new Error(error.message || "Failed to load leaderboard.");
-      }
+      if (error) throw new Error(error.message || "Failed to load leaderboard.");
 
       const cleanedEntries = Array.isArray(data)
         ? (data as FndEntry[]).map((entry) => ({
@@ -143,11 +141,10 @@ export default function FndLeaderboardPage() {
         : [];
 
       setEntries(cleanedEntries);
+      setHasUnsavedChanges(false);
     } catch (err) {
       setEntries([]);
-      setError(
-        err instanceof Error ? err.message : "Failed to load leaderboard."
-      );
+      setError(err instanceof Error ? err.message : "Failed to load leaderboard.");
     } finally {
       setLoading(false);
     }
@@ -157,44 +154,56 @@ export default function FndLeaderboardPage() {
     setOpenEntryId((prev) => (prev === id ? null : id));
   }
 
-  async function updateLegStatus(
-    entryId: string,
-    legIndex: number,
-    newStatus: LegStatus
-  ) {
+  function updateLegStatus(entryId: string, legIndex: number, newStatus: LegStatus) {
     if (!isAdmin) return;
 
-    const saveKey = `${entryId}-${legIndex}`;
-    setSavingLeg(saveKey);
     setError("");
-
-    const entry = entries.find((item) => item.id === entryId);
-    if (!entry) {
-      setSavingLeg(null);
-      return;
-    }
-
-    const updatedLegs = entry.legs_json.map((leg, index) =>
-      index === legIndex ? { ...leg, status: newStatus } : leg
-    );
+    setSuccess("");
+    setHasUnsavedChanges(true);
 
     setEntries((prev) =>
-      prev.map((item) =>
-        item.id === entryId ? { ...item, legs_json: updatedLegs } : item
-      )
+      prev.map((entry) => {
+        if (entry.id !== entryId) return entry;
+
+        return {
+          ...entry,
+          legs_json: entry.legs_json.map((leg, index) =>
+            index === legIndex ? { ...leg, status: newStatus } : leg
+          ),
+        };
+      })
     );
+  }
 
-    const { error } = await supabase
-      .from("fnd-bets")
-      .update({ legs_json: updatedLegs })
-      .eq("id", entryId);
+  async function saveResults() {
+    if (!isAdmin || !hasUnsavedChanges) return;
 
-    if (error) {
-      setError(error.message || "Failed to save result.");
-      loadEntries();
+    try {
+      setSavingResults(true);
+      setError("");
+      setSuccess("");
+
+      const updates = entries.map((entry) =>
+        supabase
+          .from("fnd-bets")
+          .update({ legs_json: entry.legs_json })
+          .eq("id", entry.id)
+      );
+
+      const results = await Promise.all(updates);
+      const failed = results.find((result) => result.error);
+
+      if (failed?.error) {
+        throw new Error(failed.error.message || "Failed to save results.");
+      }
+
+      setHasUnsavedChanges(false);
+      setSuccess("Results saved successfully.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save results.");
+    } finally {
+      setSavingResults(false);
     }
-
-    setSavingLeg(null);
   }
 
   return (
@@ -215,15 +224,30 @@ export default function FndLeaderboardPage() {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap justify-end gap-2">
                 {isAdmin ? (
-                  <button
-                    type="button"
-                    onClick={lockAdmin}
-                    className="inline-flex h-11 items-center justify-center rounded-[14px] border border-red-200 bg-red-50 px-4 text-sm font-extrabold text-red-700"
-                  >
-                    Admin On
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={saveResults}
+                      disabled={savingResults || !hasUnsavedChanges}
+                      className={`inline-flex h-11 items-center justify-center rounded-[14px] px-4 text-sm font-extrabold ${
+                        hasUnsavedChanges
+                          ? "border border-green-300 bg-green-100 text-green-800 hover:bg-green-200"
+                          : "border border-[#d6e2ec] bg-[#f1f5f8] text-[#7b91a6]"
+                      }`}
+                    >
+                      {savingResults ? "Saving..." : "Save Results"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={lockAdmin}
+                      className="inline-flex h-11 items-center justify-center rounded-[14px] border border-red-200 bg-red-50 px-4 text-sm font-extrabold text-red-700"
+                    >
+                      Admin On
+                    </button>
+                  </>
                 ) : (
                   <button
                     type="button"
@@ -242,6 +266,12 @@ export default function FndLeaderboardPage() {
                 </Link>
               </div>
             </div>
+
+            {isAdmin && hasUnsavedChanges ? (
+              <div className="mt-4 rounded-[14px] border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm font-extrabold text-yellow-800">
+                You have unsaved result changes. Press Save Results to publish them.
+              </div>
+            ) : null}
           </div>
 
           <div className="border-b border-[#dbe5ee] p-4 sm:p-6">
@@ -261,6 +291,17 @@ export default function FndLeaderboardPage() {
                 <div className="text-lg font-extrabold text-red-700">Error</div>
                 <div className="mt-1 text-sm font-semibold text-red-600">
                   {error}
+                </div>
+              </div>
+            ) : null}
+
+            {success ? (
+              <div className="mb-4 rounded-[16px] border border-green-200 bg-green-50 p-4">
+                <div className="text-lg font-extrabold text-green-700">
+                  Saved
+                </div>
+                <div className="mt-1 text-sm font-semibold text-green-600">
+                  {success}
                 </div>
               </div>
             ) : null}
@@ -332,8 +373,6 @@ export default function FndLeaderboardPage() {
                             {entry.legs_json.map((leg, legIndex) => {
                               const logo = getLogo(leg.selectionLabel);
                               const currentStatus = leg.status || "pending";
-                              const saveKey = `${entry.id}-${legIndex}`;
-                              const isSaving = savingLeg === saveKey;
 
                               return (
                                 <div
@@ -366,7 +405,7 @@ export default function FndLeaderboardPage() {
                                         currentStatus
                                       )}`}
                                     >
-                                      {isSaving ? "SAVING..." : statusText(currentStatus)}
+                                      {statusText(currentStatus)}
                                     </div>
                                   </div>
 
