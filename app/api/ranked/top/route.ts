@@ -7,17 +7,42 @@ type RankedRow = {
   mode: string;
   score: number;
   created_at: string;
-  team_json: unknown;
+  team_json: Record<string, string | null> | null;
 };
+
+const VALID_PERIODS = ["daily", "weekly", "monthly", "all_time"] as const;
 
 function getStartOfWeekMonday() {
   const now = new Date();
   const start = new Date(now);
-  const day = start.getDay(); // 0 = Sunday
+  const day = start.getDay();
   const diff = day === 0 ? 6 : day - 1;
+
   start.setDate(start.getDate() - diff);
   start.setHours(0, 0, 0, 0);
+
   return start;
+}
+
+function getFromDate(period: string): Date | null {
+  if (period === "daily") {
+    const fromDate = new Date();
+    fromDate.setHours(0, 0, 0, 0);
+    return fromDate;
+  }
+
+  if (period === "weekly") {
+    return getStartOfWeekMonday();
+  }
+
+  if (period === "monthly") {
+    const fromDate = new Date();
+    fromDate.setDate(1);
+    fromDate.setHours(0, 0, 0, 0);
+    return fromDate;
+  }
+
+  return null;
 }
 
 export async function GET(req: NextRequest) {
@@ -35,23 +60,18 @@ export async function GET(req: NextRequest) {
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
     const { searchParams } = new URL(req.url);
+
     const mode = searchParams.get("mode") ?? "sc_points";
-    const period = searchParams.get("period") ?? "all_time";
+    const rawPeriod = searchParams.get("period") ?? "all_time";
+    const period = VALID_PERIODS.includes(rawPeriod as any)
+      ? rawPeriod
+      : "all_time";
 
-    let fromDate: Date | null = null;
+    const previewScoreParam = searchParams.get("score");
+    const previewScore =
+      previewScoreParam !== null ? Number(previewScoreParam) : null;
 
-    if (period === "daily") {
-      fromDate = new Date();
-      fromDate.setHours(0, 0, 0, 0);
-    } else if (period === "weekly") {
-      fromDate = getStartOfWeekMonday();
-    } else if (period === "monthly") {
-      fromDate = new Date();
-      fromDate.setDate(1);
-      fromDate.setHours(0, 0, 0, 0);
-    } else if (period === "all_time") {
-      fromDate = null;
-    }
+    const fromDate = getFromDate(period);
 
     let query = supabase
       .from("ranked_scores")
@@ -68,25 +88,25 @@ export async function GET(req: NextRequest) {
       .limit(100);
 
     if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     const rows: RankedRow[] = (data ?? []).map((row: any) => ({
       id: String(row.id),
       name: String(row.name ?? ""),
       mode: String(row.mode ?? ""),
-      score: Number(row.score) || 0,
+      score: Number(row.score ?? 0) || 0,
       created_at: String(row.created_at ?? ""),
-      team_json: row.team_json ?? null,
+      team_json:
+        row.team_json && typeof row.team_json === "object"
+          ? row.team_json
+          : null,
     }));
 
     const entries = rows.map((row, index) => ({
       id: row.id,
-      name: row.name,
-      score: row.score,
+      name: row.name || "Unknown",
+      score: row.score, // IMPORTANT: this is the frozen Supabase score
       rank: index + 1,
       team: row.team_json,
     }));
@@ -95,10 +115,17 @@ export async function GET(req: NextRequest) {
     const topName = rows.length > 0 ? rows[0].name || "—" : "—";
     const totalEntries = rows.length;
 
+    let estimatedRank: number | null = null;
+
+    if (typeof previewScore === "number" && Number.isFinite(previewScore)) {
+      estimatedRank = rows.filter((row) => row.score > previewScore).length + 1;
+    }
+
     return NextResponse.json({
       topScore,
       topName,
       totalEntries,
+      estimatedRank,
       entries,
     });
   } catch (error) {
