@@ -8,12 +8,17 @@ import { matchInfo } from "@/app/data/fnd_markets";
 import nilmaLogo from "@/app/fnd/nilma.png";
 import bunyipLogo from "@/app/fnd/bunyip.png";
 
+const ADMIN_PASSWORD = "tom123";
+
+type LegStatus = "pending" | "hit" | "miss" | "void";
+
 type BetLeg = {
   categoryKey: string;
   categoryLabel: string;
   selectionId: string;
   selectionLabel: string;
   odds: number;
+  status?: LegStatus;
 };
 
 type FndEntry = {
@@ -25,19 +30,89 @@ type FndEntry = {
   created_at: string;
 };
 
-// ✅ detect which team logo to use
 function getLogo(label: string) {
   const lower = label.toLowerCase();
-
   if (lower.includes("bunyip")) return bunyipLogo;
   return nilmaLogo;
+}
+
+function getActiveLegs(legs: BetLeg[]) {
+  if (!Array.isArray(legs)) return [];
+  return legs.filter((leg) => leg.status !== "void");
+}
+
+function getLegHitCount(legs: BetLeg[]) {
+  const activeLegs = getActiveLegs(legs);
+  const hitLegs = activeLegs.filter((leg) => leg.status === "hit");
+  return `${hitLegs.length}/${activeLegs.length}`;
+}
+
+function getParlayStatus(legs: BetLeg[]): LegStatus {
+  if (!Array.isArray(legs) || legs.length === 0) return "pending";
+
+  const hasVoid = legs.some((leg) => leg.status === "void");
+  if (hasVoid) return "void";
+
+  const hasMiss = legs.some((leg) => leg.status === "miss");
+  if (hasMiss) return "miss";
+
+  const allHit = legs.every((leg) => leg.status === "hit");
+  if (allHit) return "hit";
+
+  return "pending";
+}
+
+function statusStyles(status?: LegStatus) {
+  if (status === "hit") return "border-green-300 bg-green-100 text-green-700";
+  if (status === "miss") return "border-red-300 bg-red-100 text-red-700";
+  if (status === "void") return "border-slate-300 bg-slate-100 text-slate-700";
+  return "border-yellow-300 bg-yellow-100 text-yellow-700";
+}
+
+function statusText(status?: LegStatus) {
+  if (status === "hit") return "HIT";
+  if (status === "miss") return "MISS";
+  if (status === "void") return "VOID";
+  return "PENDING";
+}
+
+function parlayText(status: LegStatus, hitCount: string) {
+  if (status === "hit") return `PARLAY HIT • ${hitCount}`;
+  if (status === "miss") return `PARLAY LOST • ${hitCount}`;
+  if (status === "void") return `VOID • ${hitCount}`;
+  return `PENDING • ${hitCount}`;
 }
 
 export default function FndLeaderboardPage() {
   const [entries, setEntries] = useState<FndEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savingLeg, setSavingLeg] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [openEntryId, setOpenEntryId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const savedAdmin = localStorage.getItem("fnd-admin-unlocked");
+    if (savedAdmin === "true") setIsAdmin(true);
+
+    loadEntries();
+  }, []);
+
+  function unlockAdmin() {
+    const password = window.prompt("Enter admin password");
+
+    if (password === ADMIN_PASSWORD) {
+      localStorage.setItem("fnd-admin-unlocked", "true");
+      setIsAdmin(true);
+    } else {
+      alert("Wrong password");
+    }
+  }
+
+  function lockAdmin() {
+    localStorage.removeItem("fnd-admin-unlocked");
+    setIsAdmin(false);
+  }
 
   async function loadEntries() {
     try {
@@ -55,7 +130,19 @@ export default function FndLeaderboardPage() {
         throw new Error(error.message || "Failed to load leaderboard.");
       }
 
-      setEntries(Array.isArray(data) ? (data as FndEntry[]) : []);
+      const cleanedEntries = Array.isArray(data)
+        ? (data as FndEntry[]).map((entry) => ({
+            ...entry,
+            legs_json: Array.isArray(entry.legs_json)
+              ? entry.legs_json.map((leg) => ({
+                  ...leg,
+                  status: leg.status || "pending",
+                }))
+              : [],
+          }))
+        : [];
+
+      setEntries(cleanedEntries);
     } catch (err) {
       setEntries([]);
       setError(
@@ -66,12 +153,48 @@ export default function FndLeaderboardPage() {
     }
   }
 
-  useEffect(() => {
-    loadEntries();
-  }, []);
-
   function toggleEntry(id: string) {
     setOpenEntryId((prev) => (prev === id ? null : id));
+  }
+
+  async function updateLegStatus(
+    entryId: string,
+    legIndex: number,
+    newStatus: LegStatus
+  ) {
+    if (!isAdmin) return;
+
+    const saveKey = `${entryId}-${legIndex}`;
+    setSavingLeg(saveKey);
+    setError("");
+
+    const entry = entries.find((item) => item.id === entryId);
+    if (!entry) {
+      setSavingLeg(null);
+      return;
+    }
+
+    const updatedLegs = entry.legs_json.map((leg, index) =>
+      index === legIndex ? { ...leg, status: newStatus } : leg
+    );
+
+    setEntries((prev) =>
+      prev.map((item) =>
+        item.id === entryId ? { ...item, legs_json: updatedLegs } : item
+      )
+    );
+
+    const { error } = await supabase
+      .from("fnd-bets")
+      .update({ legs_json: updatedLegs })
+      .eq("id", entryId);
+
+    if (error) {
+      setError(error.message || "Failed to save result.");
+      loadEntries();
+    }
+
+    setSavingLeg(null);
   }
 
   return (
@@ -92,16 +215,35 @@ export default function FndLeaderboardPage() {
                 </div>
               </div>
 
-              <Link
-                href="/fnd"
-                className="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#d6e2ec] bg-white px-4 text-sm font-extrabold text-[#0a2d4f] transition hover:bg-[#f7fafc]"
-              >
-                Back
-              </Link>
+              <div className="flex gap-2">
+                {isAdmin ? (
+                  <button
+                    type="button"
+                    onClick={lockAdmin}
+                    className="inline-flex h-11 items-center justify-center rounded-[14px] border border-red-200 bg-red-50 px-4 text-sm font-extrabold text-red-700"
+                  >
+                    Admin On
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={unlockAdmin}
+                    className="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#d6e2ec] bg-white px-4 text-sm font-extrabold text-[#0a2d4f]"
+                  >
+                    Admin
+                  </button>
+                )}
+
+                <Link
+                  href="/fnd"
+                  className="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#d6e2ec] bg-white px-4 text-sm font-extrabold text-[#0a2d4f]"
+                >
+                  Back
+                </Link>
+              </div>
             </div>
           </div>
 
-          {/* ✅ ONLY TOTAL ENTRIES NOW */}
           <div className="border-b border-[#dbe5ee] p-4 sm:p-6">
             <div className="rounded-[18px] border border-[#d6e2ec] bg-[#f7fafc] p-4">
               <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#6c88a2]">
@@ -115,15 +257,15 @@ export default function FndLeaderboardPage() {
 
           <div className="px-4 py-4 sm:px-6 sm:py-6">
             {error ? (
-              <div className="rounded-[16px] border border-red-200 bg-red-50 p-4">
-                <div className="text-lg font-extrabold text-red-700">
-                  Could not load leaderboard
-                </div>
+              <div className="mb-4 rounded-[16px] border border-red-200 bg-red-50 p-4">
+                <div className="text-lg font-extrabold text-red-700">Error</div>
                 <div className="mt-1 text-sm font-semibold text-red-600">
                   {error}
                 </div>
               </div>
-            ) : loading ? (
+            ) : null}
+
+            {loading ? (
               <div className="space-y-3">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div
@@ -145,6 +287,8 @@ export default function FndLeaderboardPage() {
               <div className="space-y-3">
                 {entries.map((entry) => {
                   const isOpen = openEntryId === entry.id;
+                  const parlayStatus = getParlayStatus(entry.legs_json);
+                  const legHitCount = getLegHitCount(entry.legs_json);
 
                   return (
                     <div
@@ -159,6 +303,14 @@ export default function FndLeaderboardPage() {
                         <div className="min-w-0">
                           <div className="truncate text-xl font-black text-[#0a2d4f]">
                             {entry.user_name}
+                          </div>
+
+                          <div
+                            className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusStyles(
+                              parlayStatus
+                            )}`}
+                          >
+                            {parlayText(parlayStatus, legHitCount)}
                           </div>
                         </div>
 
@@ -179,29 +331,73 @@ export default function FndLeaderboardPage() {
                           <div className="space-y-2">
                             {entry.legs_json.map((leg, legIndex) => {
                               const logo = getLogo(leg.selectionLabel);
+                              const currentStatus = leg.status || "pending";
+                              const saveKey = `${entry.id}-${legIndex}`;
+                              const isSaving = savingLeg === saveKey;
 
                               return (
                                 <div
                                   key={`${entry.id}-${legIndex}`}
-                                  className="flex items-center gap-3 rounded-[12px] border border-[#dce7f0] bg-white px-3 py-3"
+                                  className="rounded-[12px] border border-[#dce7f0] bg-white px-3 py-3"
                                 >
-                                  <Image
-                                    src={logo}
-                                    alt="team logo"
-                                    width={28}
-                                    height={28}
-                                    className="h-7 w-7 object-contain"
-                                  />
+                                  <div className="flex items-center justify-between gap-3">
+                                    <div className="flex min-w-0 items-center gap-3">
+                                      <Image
+                                        src={logo}
+                                        alt="team logo"
+                                        width={28}
+                                        height={28}
+                                        className="h-7 w-7 object-contain"
+                                      />
 
-                                  <div className="min-w-0">
-                                    <div className="text-sm font-extrabold text-[#0a2d4f]">
-                                      {leg.selectionLabel}
+                                      <div className="min-w-0">
+                                        <div className="text-sm font-extrabold text-[#0a2d4f]">
+                                          {leg.selectionLabel}
+                                        </div>
+                                        <div className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-[#7890a7]">
+                                          {leg.categoryLabel} •{" "}
+                                          {Number(leg.odds).toFixed(2)}
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-[#7890a7]">
-                                      {leg.categoryLabel} •{" "}
-                                      {Number(leg.odds).toFixed(2)}
+
+                                    <div
+                                      className={`shrink-0 rounded-full border px-3 py-1 text-xs font-black ${statusStyles(
+                                        currentStatus
+                                      )}`}
+                                    >
+                                      {isSaving ? "SAVING..." : statusText(currentStatus)}
                                     </div>
                                   </div>
+
+                                  {isAdmin ? (
+                                    <div className="mt-3 grid grid-cols-4 gap-2">
+                                      {(["hit", "miss", "pending", "void"] as LegStatus[]).map(
+                                        (status) => (
+                                          <button
+                                            key={status}
+                                            type="button"
+                                            onClick={() =>
+                                              updateLegStatus(
+                                                entry.id,
+                                                legIndex,
+                                                status
+                                              )
+                                            }
+                                            className={`rounded-[10px] border px-3 py-2 text-xs font-black transition ${
+                                              currentStatus === status
+                                                ? `${statusStyles(
+                                                    status
+                                                  )} ring-2 ring-[#0a2d4f]/20`
+                                                : "border-[#dce7f0] bg-[#f7fafc] text-[#0a2d4f] hover:bg-[#edf4f9]"
+                                            }`}
+                                          >
+                                            {statusText(status)}
+                                          </button>
+                                        )
+                                      )}
+                                    </div>
+                                  ) : null}
                                 </div>
                               );
                             })}
