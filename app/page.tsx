@@ -20,7 +20,7 @@ const modes = [
     title: "SOLO",
     description: "Play by yourself and chase your best score.",
     button: "PLAY SOLO →",
-    color: "blue",
+    color: "red",
     icon: User,
   },
   {
@@ -91,7 +91,7 @@ const extraModes = [
     title: "FOOTYARCADE",
     description: "Play a collection of AFL mini-games.",
     button: "VISIT ARCADE →",
-    color: "red",
+    color: "blue",
     image: "/footyarcade.png",
   },
 ];
