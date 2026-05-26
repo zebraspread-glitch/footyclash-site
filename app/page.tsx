@@ -293,77 +293,6 @@ function BottomBanner320() {
   );
 }
 
-function UserNotice() {
-  return (
-    <section className="mb-10 overflow-hidden rounded-[28px] border border-white/10 bg-white/5 backdrop-blur">
-      <div className="border-b border-white/10 bg-white/5 px-6 py-4 sm:px-8">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-400 text-black">
-            <Info size={22} />
-          </div>
-          <div>
-            <h2 className="text-xl font-black sm:text-2xl">Notice to Our Users</h2>
-            <p className="text-sm text-white/60">A quick message from the FootyClashTeam</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-6 py-6 sm:px-8 sm:py-8">
-  <div className="flex items-stretch gap-6">
-    
-    {/* TEXT */}
-    <div className="flex-1 max-w-4xl space-y-4 text-sm leading-7 text-white/85 sm:text-base">
-      <p>Hey everyone,</p>
-
-      <p>
-        I want to be upfront with you all about a recent change to the website.
-      </p>
-
-      <p>
-        You may have noticed that ads have been added across the site. This
-        wasn’t something I originally wanted to do, as I’ve always aimed to keep
-        the experience as clean and enjoyable as possible.
-      </p>
-
-      <p>
-        Unfortunately, due to a legal situation involving <strong> Lucas Dalton </strong> filing a lawsuit against me, it has resulted in significant
-        financial loss, I’ve had to find a way to cover costs and keep the site
-        running. Adding ads is currently the only way I can continue maintaining
-        and improving the platform.
-      </p>
-
-      <p>
-        I completely understand that ads can be frustrating, and I sincerely
-        apologize for any inconvenience they may cause. I’m doing my best to keep
-        them as minimal and non-intrusive as possible while still supporting the
-        site.
-      </p>
-
-      <p>
-        Most of the pop-ups will likely be advertising Lucas Daltons memecoins because the lawsuit requires me to advertise them. Please DO NOT buy any of Dalton's meme coins
-      </p>
-
-      <p className="pt-2 font-semibold text-white">— The FootyClashTeam</p>
-    </div>
-
-    {/* RIGHT IMAGE */}
-    <div className="hidden md:flex items-stretch justify-end w-[220px]">
-  <div className="relative w-full h-full min-h-[300px]">
-    <Image
-      src="/dalts.png"
-      alt="Dalts"
-      fill
-      className="object-cover rounded-xl opacity-90"
-    />
-  </div>
-</div>
-
-  </div>
-</div>
-    </section>
-  );
-}
-
 export default function HomePage() {
   return (
     <>
@@ -381,7 +310,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <UserNotice />
+
 
             <TopBanner728 />
 
